@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: yolov10n.pt
-data: C:/Users/hiyos/OneDrive - 埼玉大学/あかとき/プログラム/SC-21/dataset/20240709_training.yaml
+data: C:/Users/hiyos/OneDrive - 埼玉大学/あかとき/プログラム/SC-21/dataset/training.yaml
 epochs: 100
 time: null
 patience: 100
