@@ -7,6 +7,7 @@ import serial
 from micropyGPS import MicropyGPS
 from gpiozero import Motor
 from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import LED
 import cv2
 import numpy as np
 from picamera2 import Picamera2
@@ -112,13 +113,24 @@ def main():
     
     # ---セットアップゾーン---
     
-    # UART(GPS)通信設定
+    # UART(GPS)通信設定(Pin確認済み)
     try:
         uart = serial.Serial('/dev/serial0', 38400, timeout = 10)
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
 
-    
+    #BNOの電源ピンをHighにする
+    v_bno = LED(9)
+    v_bno.on()
+
+    #BMEの電源ピンをHighにする
+    v_bme = LED(27)
+    v_bme.on()
+
+    #LEDもつけてみる
+    LED_1 = LED(23)
+    LED_1.on()
+
     # モータードライバセットアップ
     try:
         PIN_AIN1 = 18
