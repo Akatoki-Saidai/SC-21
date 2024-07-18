@@ -113,23 +113,27 @@ def main():
     
     # ---セットアップゾーン---
     
-    # UART(GPS)通信設定(Pin確認済み)
+    # UART(GPS)通信設定(Check pin)
     try:
         uart = serial.Serial('/dev/serial0', 38400, timeout = 10)
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
 
-    #BNOの電源ピンをHighにする
-    v_bno = LED(9)
-    v_bno.on()
+    try:
+        #BNOの電源ピンをHighにする
+        v_bno = LED(9)
+        v_bno.on()
 
-    #BMEの電源ピンをHighにする
-    v_bme = LED(27)
-    v_bme.on()
+        #BMEの電源ピンをHighにする
+        v_bme = LED(27)
+        v_bme.on()
 
-    #LEDもつけてみる
-    LED_1 = LED(23)
-    LED_1.on()
+        #LEDもつけてみる
+        LED_1 = LED(23)
+        LED_1.on()
+    except Exception as e:
+        print(f"An error occured in turnon bmp, bno, led: {e}")
+
 
     # モータードライバセットアップ
     try:
