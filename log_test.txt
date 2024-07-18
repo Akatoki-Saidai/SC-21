@@ -1,0 +1,154 @@
+An error occured in turnon bmp, bno, led: 'GPIO busy'
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.0022222222222222222, 0.0044444444444444444, 0.0011111111111111111)
+Mag:  (-51.1875, 1.5, 40.25)
+Accel (0.02, -0.04, 0.02)
+Accel_all (1.35, -1.61, -9.56)
+ 35.965685459198085
+ 1010.8264191535131
+temperture35.97*C
+pressure: 1010.83hPa
+Relative altitude: -0.07 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (-0.0044444444444444444, -0.01, -0.0022222222222222222)
+Mag:  (-57.0, 14.875, 49.5)
+Accel (-0.02, -0.1, 0.13)
+Accel_all (1.42, -1.62, -9.56)
+ 35.96754234074069
+ 1010.8445258067253
+temperture35.97*C
+pressure: 1010.84hPa
+Relative altitude: -0.23 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.005555555555555556, -0.0022222222222222222, 0.0)
+Mag:  (-56.5, 13.0, 45.0)
+Accel (0.01, -0.02, 0.0)
+Accel_all (1.33, -1.54, -9.59)
+ 35.875626753509664
+ 1010.8239457486212
+temperture35.88*C
+pressure: 1010.82hPa
+Relative altitude: -0.05 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.0011111111111111111, 0.0011111111111111111, 0.0)
+Mag:  (-57.1875, 12.875, 43.375)
+Accel (0.01, 0.0, 0.04)
+Accel_all (1.29, -1.53, -9.45)
+ 35.91926343393425
+ 1010.8086802467383
+temperture35.92*C
+pressure: 1010.81hPa
+Relative altitude: 00.09 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.0011111111111111111, -0.0033333333333333335, -0.0011111111111111111)
+Mag:  (-56.75, 12.375, 43.75)
+Accel (-0.01, 0.01, -0.01)
+Accel_all (1.31, -1.48, -9.61)
+ 35.959805334583166
+ 1010.8251205047924
+temperture35.96*C
+pressure: 1010.83hPa
+Relative altitude: -0.06 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.0011111111111111111, 0.0011111111111111111, -0.0011111111111111111)
+Mag:  (-56.375, 13.0625, 42.875)
+Accel (0.02, -0.08, 0.0)
+Accel_all (1.34, -1.57, -9.6)
+ 36.003442058608925
+ 1010.823220673225
+temperture36.00*C
+pressure: 1010.82hPa
+Relative altitude: -0.04 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (-0.0022222222222222222, 0.0011111111111111111, -0.0044444444444444444)
+Mag:  (-56.0625, 12.5, 42.6875)
+Accel (0.01, 0.0, -0.02)
+Accel_all (1.33, -1.47, -9.62)
+ 35.95516313122971
+ 1010.8325471013102
+temperture35.96*C
+pressure: 1010.83hPa
+Relative altitude: -0.13 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (0.0, 0.0033333333333333335, 0.0022222222222222222)
+Mag:  (-55.75, 12.6875, 41.0)
+Accel (0.02, -0.04, 0.02)
+Accel_all (1.42, -1.57, -9.56)
+ 35.91833499368988
+ 1010.8238813419655
+temperture35.92*C
+pressure: 1010.82hPa
+Relative altitude: -0.05 metres
+Positive rotation at maximum speed - 1s
+Positive rotation at slightly slow speed - 1s
+Positive rotation at slow speed - 1s
+stop motor rotation - 1s
+Reverse rotation at maximum speed - 1s
+Reverse rotation at slightly slow speed - 1s
+Reverse rotationat slow speed - 1s
+stop motor rotation - 1s
+Gyro:  (-0.0033333333333333335, 0.0044444444444444444, -0.0011111111111111111)
+Mag:  (-55.5625, 12.5, 39.0)
+Accel (0.04, 0.0, 0.01)
+Accel_all (1.42, -1.53, -9.56)
+ 35.96413805794384
+ 1010.8222035598193
+temperture35.96*C
+pressure: 1010.82hPa
+Relative altitude: -0.03 metres

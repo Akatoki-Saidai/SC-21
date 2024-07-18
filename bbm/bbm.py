@@ -1,8 +1,8 @@
 import builtins
 import time
 from smbus2 import SMBus
-import bmp280 as BMP280
-import bno055 as BNO055
+from bmp280 import BMP280
+from bno055 import BNO055
 import serial
 from micropyGPS import MicropyGPS
 from gpiozero import Motor
