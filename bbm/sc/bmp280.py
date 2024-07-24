@@ -215,12 +215,12 @@ class BMP280:
     
     def get_baseline():
         baseline_values = []
-        baseline_size = 20
+        baseline_size = 100
 
         for i in range(baseline_size):
             pressure = bmp.get_pressure()
             baseline_values.append(pressure)
-            time.sleep(0.5)
+            time.sleep(0.1)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
     
         return baseline
