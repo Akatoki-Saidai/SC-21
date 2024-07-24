@@ -131,7 +131,7 @@ def main():
 
             # モーターの回転を停止
             motor.brake(motor_right, motor_left)
-            print("motor: brake -1s")
+            print("motor: brake")
             time.sleep(1)  # 何秒進むか
 
             # モーターを回転させ，CanSatを1秒くらい右回転
