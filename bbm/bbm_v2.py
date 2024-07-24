@@ -124,46 +124,23 @@ def main():
                 # continue
 
         try:
-            # 最高速で正回転 - 1秒
-            print("Positive rotation at maximum speed - 1s")
-            motor_left.value = 1.0
-            motor_right.value = 1.0
+            # モーターを回転して前進
+            motor.accel(motor_right, motor_left)
+            time.sleep(1)  # 何秒進むか
+
+            # モーターの回転を停止
+            motor.brake(motor_right, motor_left)
+            time.sleep(1)  # 何秒進むか
+
+            # モーターを回転させ，CanSatを1秒くらい右回転
+            motor.rightturn(motor_right, motor_left)
+
+            # モーターを回転させ，CanSatを1秒くらい左回転
+            motor.leftturn(motor_right, motor_left)
+            
+            
             time.sleep(1)
-            # 少し遅く正回転 - 1秒
-            print("Positive rotation at slightly slow speed - 1s")
-            motor_left.value = 0.75
-            motor_right.value = 0.75
-            time.sleep(1)
-            # 遅く正回転 - 2秒
-            print("Positive rotation at slow speed - 1s")
-            motor_left.value = 0.5
-            motor_right.value = 0.5
-            time.sleep(1)
-            # 停止 - 1秒
-            print("stop motor rotation - 1s")
-            motor_left.value = 0.0
-            motor_right.value = 0.0
-            time.sleep(1)
-            # 最高速で逆回転 - 1秒
-            print("Reverse rotation at maximum speed - 1s")
-            motor_left.value = -1.0
-            motor_right.value = -1.0
-            time.sleep(1)
-            # 少し遅く逆回転 - 1秒
-            print("Reverse rotation at slightly slow speed - 1s")
-            motor_left.value = -0.75
-            motor_right.value = -0.75
-            time.sleep(1)
-            # 遅く逆回転 - 2秒
-            print("Reverse rotationat slow speed - 1s")
-            motor_left.value = -0.5
-            motor_right.value = -0.5
-            time.sleep(1)
-            # 停止 - 1秒
-            print("stop motor rotation - 1s")
-            motor_left.value = 0.0
-            motor_right.value = 0.0
-            time.sleep(1)
+            
         except Exception as e:
             print(f"An error occured in moving motor: {e}")
             # 停止

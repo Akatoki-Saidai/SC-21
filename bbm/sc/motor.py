@@ -49,7 +49,7 @@ def rightturn(right, left):
     
     right.value = 0
     left.value = 0
-    power = 1
+    power = 0
     for i in range(int(1 / 0.05)):
         right.value = power
         left.value = -1 * power
@@ -57,6 +57,17 @@ def rightturn(right, left):
 
     right.value = 1
     left.value = -1
+
+    for i in range(int(1 / 0.05)):
+        right.value = power
+        left.value = -1 * power
+        power -= 0.05
+
+    right.value = 0
+    left.value = 0
+
+
+
 
 def leftturn(right, left):
     
@@ -70,5 +81,13 @@ def leftturn(right, left):
 
     right.value = -1
     left.value = 1
+
+    for i in range(int(1 / 0.05)):
+        right.value = power
+        left.value = -1 * power
+        power -= 0.05
+        
+    right.value = 0
+    left.value = 0
 
     
