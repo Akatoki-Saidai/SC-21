@@ -25,7 +25,7 @@ class Camera:
 
     def analyze_red(frame, mask):
             
-        camera_order = 4
+        camera_order = 0
         # 画像の中にある領域を検出する
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             
@@ -61,9 +61,9 @@ class Camera:
             # 中心座標のx座標が画像の中心より大きいか小さいか判定
             if area > 10000:
                 print("Close enough to red")
-                camera_order = 0
+                camera_order = 4
 
-            else:
+            elif area > 150:
                 if frame_center_x -  50 <= center_x <= frame_center_x + 50:
                     print("The red object is in the center")#直進
                     camera_order = 1
@@ -73,6 +73,9 @@ class Camera:
                 elif center_x < frame_center_x - 50:
                     print("The red object is in the left")#左へ
                     camera_order = 3
+
+            else:
+                pass
 
             # red_result = cv2.drawContours(mask, [biggest_contour], -1, (0, 255, 0), 2)
         
