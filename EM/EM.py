@@ -272,17 +272,21 @@ def main():
         try:
             # モーターを回転して前進
             motor.accel(motor_right, motor_left)
+            print("motor: forward -1s")
             time.sleep(1)  # 何秒進むか
 
             # モーターの回転を停止
             motor.brake(motor_right, motor_left)
+            print("motor: brake")
             time.sleep(1)  # 何秒進むか
 
             # モーターを回転させ，CanSatを1秒くらい右回転
             motor.rightturn(motor_right, motor_left)
+            print("motor: rightturn")
 
             # モーターを回転させ，CanSatを1秒くらい左回転
             motor.leftturn(motor_right, motor_left)
+            print("motor: leftturn")
             
             
             time.sleep(1)
