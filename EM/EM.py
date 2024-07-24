@@ -278,13 +278,14 @@ def main():
             motor.brake(motor_right, motor_left)
             time.sleep(1)  # 何秒進むか
 
-            # モーターを回転させ，CanSatを右回転
+            # モーターを回転させ，CanSatを1秒くらい右回転
             motor.rightturn(motor_right, motor_left)
-            time.sleep(1)  # 何秒進むか
 
-            # モーターを回転させ，CanSatを左回転
+            # モーターを回転させ，CanSatを1秒くらい左回転
             motor.leftturn(motor_right, motor_left)
-            time.sleep(1)  # 何秒進むか
+            
+            
+            time.sleep(1)
 
         except Exception as e:
             print(f"An error occured in moving motor: {e}")
