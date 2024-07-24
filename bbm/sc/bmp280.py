@@ -212,3 +212,15 @@ class BMP280:
             temperature = manual_temperature
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
         return altitude
+    
+    def get_baseline():
+        baseline_values = []
+        baseline_size = 20
+
+        for i in range(baseline_size):
+            pressure = bmp.get_pressure()
+            baseline_values.append(pressure)
+            time.sleep(0.5)
+        baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
+    
+        return baseline
