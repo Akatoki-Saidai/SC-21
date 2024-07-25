@@ -203,7 +203,7 @@ class BMP280:
         # Use the manual_temperature variable if temperature adjustments are required.
         _, pressure = self.get_temp_pres()
         if manual_temperature is None:
-            temperature = self.get_temperature()
+            temperature, _ = self.get_temp_pres()
         else:
             temperature = manual_temperature
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
