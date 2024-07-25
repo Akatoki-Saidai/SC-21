@@ -3,6 +3,8 @@ from smbus2 import SMBus
 import serial
 from gpiozero import LED
 from picamera2 import Picamera2
+import math
+import numpy as np
 
 # scに使用ライブラリほぼまとめました
 from sc import motor
@@ -23,7 +25,7 @@ def main():
     # フェーズ，ゴール設定
     try:
         phase = 0
-        goal_latitudee = 40.142621667
+        goal_latitude = 40.142621667
         goal_longtitude = 139.987548333
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
