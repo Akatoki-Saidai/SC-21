@@ -226,15 +226,114 @@ def main():
         #            近距離フェーズ(phase = 3)               #
         # ************************************************** #
         elif (phase == 3):
-            
+
             try:
-                # ここにコードを記述(担当：田中)
+                ## ここにコードを記述(担当：田中)
 
-                # カメラを起動
+                ## カメラを起動
+                if (CameraStart == False):
+                    picam2.start()
+                    CameraStart = True
 
-                # カメラの取得したフレームから赤色を探す
+                ## カメラの取得したフレームから赤色を探す
+                if (CameraStart == True):
+                    frame = picam2.capture_array()
+                    # 赤色を検出
+                    mask = cam.red_detect(frame)
+                    # 赤色検知の結果を取得
+                    # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール，
+                    camera_order = cam.analyze_red(frame, mask)
+                    # 結果表示
+                    time.sleep(0.5)
+                    #print(len(contours))
 
-                # カメラの赤色検知関数の戻り値を参考にしてもーターを動かす
+                    ## カメラの赤色検知関数の戻り値を参考にしてもーターを動かす
+
+                    # 中央にゴールがあるとき一秒前進
+                    if (camera_order == 1):
+                        try:
+                            # モーターを回転して前進
+                            motor.accel(motor_right, motor_left)
+                            print("motor: forward -1s")
+                            time.sleep(1)  # 1秒進む
+
+                            # モーターの回転を停止
+                            motor.brake(motor_right, motor_left)
+                            print("motor: brake")
+                            time.sleep(1)  # 1秒止まる
+
+                        except Exception as e:
+                            print(f"An error occured in moving motor: {e}")
+                            # モーターを強制停止
+                            motor_left.value = 0.0
+                            motor_right.value = 0.0
+
+                    #　右にゴールがあるとき左に回転
+                    elif (camera_order == 2):
+                        try:
+                            # モーターを回転させ，CanSatを1秒くらい左回転
+                            motor.leftturn(motor_right, motor_left)
+                            print("motor: leftturn")
+
+                            motor.brake(motor_right, motor_left)
+                            print("motor: brake")
+                            time.sleep(1)  # 1秒止まる
+
+                        except Exception as e:
+                            print(f"An error occured in moving motor: {e}")
+                            # モーターを強制停止
+                            motor_left.value = 0.0
+                            motor_right.value = 0.0
+
+                    #　左にゴールがあるとき右に回転
+                    elif (camera_order == 3):
+                        try:
+                            # モーターを回転させ，CanSatを1秒くらい右回転
+                            motor.rightturn(motor_right, motor_left)
+                            print("motor: rightturn")
+
+                            motor.brake(motor_right, motor_left)
+                            print("motor: brake")
+                            time.sleep(1)  # 1秒止まる
+
+                        except Exception as e:
+                            print(f"An error occured in moving motor: {e}")
+                            # モーターを強制停止
+                            motor_left.value = 0.0
+                            motor_right.value = 0.0
+
+                    #　ゴールが見つからないとき右に回転
+                    elif (camera_order == 0):
+                        try:
+                            # モーターを回転させ，CanSatを1秒くらい右回転
+                            motor.rightturn(motor_right, motor_left)
+                            print("motor: rightturn")
+
+                            motor.brake(motor_right, motor_left)
+                            print("motor: brake")
+                            time.sleep(1)  # 1秒止まる
+
+                        except Exception as e:
+                            print(f"An error occured in moving motor: {e}")
+                            # モーターを強制停止
+                            motor_left.value = 0.0
+                            motor_right.value = 0.0
+
+                    ## 赤色検知関数の戻り値を参考にフェーズ移行
+                    ## 条件式を記述し，whileループを抜けてゴール判定
+                    #ゴールについたらフェーズ4に移行
+                    elif (camera_order == 4):
+                        phase = 4
+                        # ゴール判定
+                        try:
+                            print("Goal Goal Goal")
+
+                        except Exception as e:
+                            print(f"An error occured in judging goal... (;_;): {e}")
+
+                        break
+                    else:
+                        pass
 
 
 
@@ -242,29 +341,12 @@ def main():
                 print(f"An error occured in waiting phase: {e}")
 
 
-            # 赤色検知関数の戻り値を参考にフェーズ移行
-            # 条件式を記述し，whileループを抜けてゴール判定
-            if ():
-                phase = 4
-                # ゴール判定
-                try:
-                    print("Goal Goal Goal")
-
-                except Exception as e:
-                    print(f"An error occured in judging goal... (;_;): {e}")
-
-                break
-
-            else:
-                pass
-
 
 
 
         #////////////////////////////////////////////////////////////////////
         # 以下記述コード(各フェーズ内のtryに適切なものをコピペしてください)
 
-        
 
         # "モーター"を使うコード
         # これらを使ってゴールの向きに回転し，ゴールへ前進する
@@ -287,8 +369,9 @@ def main():
             # モーターを回転させ，CanSatを1秒くらい左回転
             motor.leftturn(motor_right, motor_left)
             print("motor: leftturn")
-            
-            
+
+
+
             time.sleep(1)
 
         except Exception as e:
