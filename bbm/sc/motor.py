@@ -66,16 +66,21 @@ def rightturn(right, left):
     left.value = 0
     power = 0
     for i in range(int(1 / 0.05)):
-        right.value = power
-        left.value = -1 * power
+        if (-1 <= power <= 1):
+            right.value = power
+            left.value = -1 * power
+        
         power += 0.05
 
+    power = 1
     right.value = 1
     left.value = -1
 
     for i in range(int(1 / 0.05)):
-        right.value = power
-        left.value = -1 * power
+        if (-1 <= power <= 1):
+            right.value = power
+            left.value = -1 * power
+        
         power -= 0.05
 
     right.value = 0
@@ -88,21 +93,77 @@ def leftturn(right, left):
     
     right.value = 0
     left.value = 0
-    power = 1
+    power = 0
     for i in range(int(1 / 0.05)):
-        right.value = -1 * power
-        left.value = power
+        if (-1 <= power <= 1):
+            right.value = -1 * power
+            left.value = power
+        
         power += 0.05
 
+    power = 1
     right.value = -1
     left.value = 1
 
     for i in range(int(1 / 0.05)):
-        right.value = power
-        left.value = -1 * power
-        power -= 0.05
+        if (-1 <= power <= 1):
+            right.value = -1 * power
+            left.value = power
         
+        power -= 0.05
+            
     right.value = 0
     left.value = 0
 
     
+
+
+
+def rightonly(right, left):
+    
+    right.value = 0
+    left.value = 0
+
+    power = 0
+    for i in range(int(1 / 0.05)):
+        if (-1 <= power <= 1):
+            right.value = power
+
+        power += 0.05
+
+    power = 1
+    right.value = 1
+
+    for i in range(int(1 / 0.05)):
+        if (-1 <= power <= 1):
+            right.value = power
+            
+        power -= 0.05
+
+    right.value = 0
+
+
+
+
+def leftonly(right, left):
+    
+    right.value = 0
+    left.value = 0
+    power = 0
+
+    for i in range(int(1 / 0.05)):
+        if (-1 <= power <= 1):
+            left.value = power
+        
+        power += 0.05
+
+    power = 1
+    left.value = 1
+
+    for i in range(int(1 / 0.05)):
+        if (-1 <= power <= 1):
+            left.value = power
+        
+        power -= 0.05
+        
+    left.value = 0

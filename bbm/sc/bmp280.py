@@ -1,5 +1,6 @@
 """BMP280 Driver."""
 
+
 import struct
 import time
 
@@ -213,7 +214,7 @@ class BMP280:
         baseline_size = 100
 
         for i in range(baseline_size):
-            pressure = self.get_pressure()
+            _, pressure = self.get_temp_pres()
             baseline_values.append(pressure)
             time.sleep(0.1)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
