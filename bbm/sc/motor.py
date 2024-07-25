@@ -1,3 +1,4 @@
+import time
 from gpiozero import Motor
 from gpiozero.pins.pigpio import PiGPIOFactory
 
@@ -76,6 +77,8 @@ def rightturn(right, left):
     right.value = 1
     left.value = -1
 
+    time.sleep(1)
+
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = power
@@ -104,6 +107,8 @@ def leftturn(right, left):
     power = 1
     right.value = -1
     left.value = 1
+
+    time.sleep(1)
 
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
@@ -134,6 +139,8 @@ def rightonly(right, left):
     power = 1
     right.value = 1
 
+    time.sleep(1)
+
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = power
@@ -159,6 +166,8 @@ def leftonly(right, left):
 
     power = 1
     left.value = 1
+
+    time.sleep(1)
 
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
