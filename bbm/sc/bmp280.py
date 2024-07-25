@@ -192,20 +192,15 @@ class BMP280:
         self.temperature = self.calibration.compensate_temperature(raw.temperature)
         self.pressure = self.calibration.compensate_pressure(raw.pressure) / 100.0
 
-    def get_temperature(self):
+    def get_temp_pres(self):
         self.update_sensor()
-        return self.temperature
-
-    def get_pressure(self):
-        self.update_sensor()
-        return self.pressure
+        return self.temperature, self.pressure
 
     def get_altitude(self, qnh=1013.25, manual_temperature=None):
         # qnh = pressure at sea level where the readings are being taken.
         # The temperature should be the outdoor temperature.
         # Use the manual_temperature variable if temperature adjustments are required.
-        self.update_sensor()
-        pressure = self.get_pressure()
+        _, pressure = self.get_temp_pres()
         if manual_temperature is None:
             temperature = self.get_temperature()
         else:
@@ -213,12 +208,12 @@ class BMP280:
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
         return altitude
     
-    def get_baseline():
+    def get_baseline(self):
         baseline_values = []
         baseline_size = 100
 
         for i in range(baseline_size):
-            pressure = bmp.get_pressure()
+            pressure = self.get_pressure()
             baseline_values.append(pressure)
             time.sleep(0.1)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
