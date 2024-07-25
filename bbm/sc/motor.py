@@ -35,11 +35,26 @@ def accel(right, left):
 
 
 def brake(right, left):
-    power = 1
+    power_r = right.value
+    power_l = left.value
+
     for i in range(int(1 / 0.05)):
-        right.value = power
-        left.value = power
-        power -= 0.05
+        right.value = power_r
+        left.value = power_l
+        if power_r > 0:
+            power_r -= 0.05
+        elif power_r < 0:
+            power_r += 0.05
+        else:
+            pass
+        if power_l > 0:
+            power_l -= 0.05
+        elif power_l < 0:
+            power_l += 0.05
+        else:
+            pass
+
+    
 
     right.value = 0
     left.value = 0
