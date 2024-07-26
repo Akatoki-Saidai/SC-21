@@ -46,6 +46,9 @@ def main():
         #BNOの電源ピンをHighにする
         v_bno = LED(9)
         v_bno.on()
+        #BNOのリセットピンをHighにする
+        v_bno_reset = LED(24)
+        v_bno_reset.on()
 
         #BMEの電源ピンをHighにする
         v_bme = LED(27)

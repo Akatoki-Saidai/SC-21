@@ -37,8 +37,8 @@ def main():
         v_bno = LED(11)
         v_bno.on()
         #BNOのリセットピンをHighにする
-        v_bno = LED(24)
-        v_bno.on()
+        v_bno_reset = LED(24)
+        v_bno_reset.on()
 
         #BMPの電源ピンをHighにする
         v_bme = LED(22)
