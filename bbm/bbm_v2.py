@@ -8,6 +8,7 @@ from picamera2 import Picamera2
 from sc import motor
 import sc.print_override as override
 from sc.camera import Camera
+import sc.csv_print as csv
 from sc.bmp280 import BMP280
 from sc.bno055 import BNO055
 from sc.micropyGPS import MicropyGPS
@@ -28,6 +29,7 @@ def main():
         uart = serial.Serial('/dev/serial0', 38400, timeout = 10)
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
+        csv.print('serious_error', f"An error occured in setting serial 0: {e}")
 
 
     try:
@@ -44,6 +46,7 @@ def main():
         LED_1.on()
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
+        csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
 
 
     # モータードライバセットアップ
@@ -57,6 +60,7 @@ def main():
 
     except Exception as e:
         print(f"An error occured in setting motor_driver: {e}")
+        csv.print('serious_error', f"An error occured in setting motor_driver: {e}")
 
 
     # gpsのセットアップ
@@ -64,6 +68,7 @@ def main():
         gnss = MicropyGPS(9, 'dd')
     except Exception as e:
         print(f"An error occured in setting gps object: {e}")
+        csv.print('serious_error', f"An error occured in setting gps object: {e}")
 
 
     #bno055のセットアップ
@@ -76,6 +81,7 @@ def main():
         bno.setExternalCrystalUse(True)
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
+        csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
         
 
     #bmp280のセットアップ
@@ -83,7 +89,8 @@ def main():
         bus = SMBus(1)
         bmp = BMP280(i2c_dev=bus)
     except Exception as e:
-            print(f"An error occured in setting bmp280 object: {e}")
+        print(f"An error occured in setting bmp280 object: {e}")
+        csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
 
     # bmp280高度算出用基準気圧取得
     try:
@@ -92,6 +99,7 @@ def main():
         
     except Exception as e:
         print(f"An error occured in getting bmp280 data: {e}")
+        csv.print('serious_error', f"An error occured in getting bmp280 data: {e}")
 
     # カメラセットアップ
     try:
@@ -103,6 +111,7 @@ def main():
 
     except Exception as e:
         print(f"An error occurred in init camera: {e}")
+        csv.print('serious_error', f"An error occurred in init camera: {e}")
 
 
 
@@ -114,9 +123,10 @@ def main():
         try:
             sentence = uart.readline()
         except Exception as e:
-                print(f"An error occured in getting data from serial 0: {e}")
-                # print(len(sentence))
-                # continue
+            print(f"An error occured in getting data from serial 0: {e}")
+            csv.print('error', f"An error occured in getting data from serial 0: {e}")
+            # print(len(sentence))
+            # continue
 
         try:
             # モーターを回転して前進
@@ -142,9 +152,11 @@ def main():
 
         except Exception as e:
             print(f"An error occured in moving motor: {e}")
+            csv.print('error', f"An error occured in moving motor: {e}")
             # 停止
             motor_left.value = 0.0
             motor_right.value = 0.0
+            csv.print('motor', [0, 0])
 
 
         # GPS緯度経度読み取り
@@ -158,6 +170,7 @@ def main():
                         #print(chr(x))
                         except Exception as e:
                                 print(f"An error occured in updating GPS data: {e}")
+                                csv.print('error', f"An error occured in updating GPS data: {e}")
                         
                         if stat:
                             try:
@@ -168,11 +181,15 @@ def main():
                                 print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                 print("latitude:", gnss.latitude[0])
                                 print("longitude:", gnss.longitude[0])
+                                csv.print('lat', gnss.latitude)
+                                csv.print('lon', gnss.longitude)
                             except Exception as e:
-                                    print(f"An error occured in loading GPS data : {e}")
+                                print(f"An error occured in loading GPS data : {e}")
+                                csv.print('error', f"An error occured in loading GPS data : {e}")
 
         except Exception as e:
             print(f"An error occured in reading GPS tm, lat,lon: {e}")
+            csv.print('error', f"An error occured in reading GPS tm, lat,lon: {e}")
 
 
         # bno055データ取得
@@ -187,6 +204,7 @@ def main():
             print("Accel_all", Accel_all)
         except Exception as e:
             print(f"An error occured in reading bno055: {e}")
+            csv.print('error', f"An error occured in reading bno055: {e}")
     
         # bmp280データ取得(基準高度参照)
         try:
@@ -197,6 +215,7 @@ def main():
             print(f"Relative altitude: {altitude:05.2f} metres")
         except Exception as e:
             print(f"An error occured in reading bmp280: {e}")
+            csv.print('error', f"An error occured in reading bmp280: {e}")
 
 
         # カメラデータ取得&処理
@@ -217,6 +236,7 @@ def main():
 
         except Exception as e:
             print(f"An error occured in processing camera: {e}")
+            csv.print('error', f"An error occured in processing camera: {e}")
 
 
 
