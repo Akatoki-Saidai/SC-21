@@ -288,27 +288,35 @@ class BNO055:
 	def getVector(self, vectorType):
 		buf = self.readBytes(vectorType, 6)
 		xyz = struct.unpack('hhh', struct.pack('BBBBBB', buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]))
+		result_vector = []
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
-			csv.print('mag', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_GYROSCOPE:
 			scalingFactor = 900.0
-			csv.print('gyro', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_EULER:
 			scalingFactor = 16.0
-			csv.print('euler', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_GRAVITY:
 			scalingFactor = 100.0
-			csv.print('grav', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_LINEARACCEL:
 			scalingFactor = 100.0
-			csv.print('accel_line', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_ACCELEROMETER:
 			scalingFactor = 100.0
-			csv.print('accel_all', tuple([i/scalingFactor for i in xyz]))
+			result_vector = [i/scalingFactor for i in xyz]
+			csv.print('mag', result_vector)
 		else:
 			scalingFactor = 1.0
-		return tuple([i/scalingFactor for i in xyz])
+			result_vector = [i/scalingFactor for i in xyz]
+		return result_vector
 
 	def getQuat(self):
 		buf = self.readBytes(BNO055.BNO055_QUATERNION_DATA_W_LSB_ADDR, 8)
