@@ -184,6 +184,6 @@ if (225 < cansat_to_goal_angle_degree <= 330):
     # motor.leftturn(motor_right, motor_left)
     # time.sleep(1) 
 if (180 < cansat_to_goal_angle_degree < 225):
-    print("sarp_left\n")
+    print("sharp_left\n")
     # motor.leftturn(motor_right, motor_left)
     # time.sleep(2)  

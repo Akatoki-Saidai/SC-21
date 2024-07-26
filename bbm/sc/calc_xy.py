@@ -68,7 +68,7 @@ def calc_xy(phi_deg, lambda_deg, phi0_deg, lambda0_deg):
                                         np.multiply(np.cos(2*xi2*np.arange(1,6)),
                                                     np.sinh(2*eta2*np.arange(1,6)))))) # [m]
     # return
-    return x, y # [m]
+    return (x, y)  # [m]
 
 
 def Rotation_clockwise_xy(vec_xy,radian):
