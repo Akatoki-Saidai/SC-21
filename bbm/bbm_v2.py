@@ -48,10 +48,10 @@ def main():
 
     # モータードライバセットアップ
     try:
-        PIN_AIN1 = 18
-        PIN_AIN2 = 23
-        PIN_BIN1 = 24
-        PIN_BIN2 = 13
+        PIN_AIN1 = 13
+        PIN_AIN2 = 5
+        PIN_BIN1 = 17
+        PIN_BIN2 = 4
 
         motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
@@ -81,22 +81,17 @@ def main():
     #bmp280のセットアップ
     try:
         bus = SMBus(1)
-        bmp280 = BMP280(i2c_dev=bus)
+        bmp = BMP280(i2c_dev=bus)
     except Exception as e:
             print(f"An error occured in setting bmp280 object: {e}")
 
     # bmp280高度算出用基準気圧取得
     try:
-        baseline_values = []
-        baseline_size = 20
-
-        for i in range(baseline_size):
-            pressure = bmp280.get_pressure()
-            baseline_values.append(pressure)
-            time.sleep(0.5)
-        baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
+        baseline = bmp.get_baseline()
+        print("baseline: ", baseline)
+        
     except Exception as e:
-            print(f"An error occured in getting bmp280 data: {e}")
+        print(f"An error occured in getting bmp280 data: {e}")
 
     # カメラセットアップ
     try:
@@ -195,8 +190,8 @@ def main():
     
         # bmp280データ取得(基準高度参照)
         try:
-            temperature, pressure = bmp280.get_temp_pres()
-            altitude = bmp280.get_altitude(qnh=baseline)
+            temperature, pressure = bmp.get_temp_pres()
+            altitude = bmp.get_altitude(qnh=baseline)
             print(f"temperture{temperature:05.2f}*C")
             print(f"pressure: {pressure:05.2f}hPa")
             print(f"Relative altitude: {altitude:05.2f} metres")
