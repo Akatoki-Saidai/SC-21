@@ -1,6 +1,8 @@
 import numpy as np
 import math
 
+#----------------------------------------------------------
+#long faseで使う関数を定義しています。この中身はcalc_xy.pyの中にいるのでEMにコピーする必要はありません
 def calc_xy(phi_deg, lambda_deg, phi0_deg, lambda0_deg):
     """ 緯度経度を平面直角座標に変換する
     - input:
@@ -79,8 +81,11 @@ def Rotation_clockwise_xy(vec_xy,radian):
     new_vector = (new_vector_x,new_vector_y)
 
     return new_vector
+#----------------------------------------------------------
+
 
 #--------------------Test code-----------------------------
+#Test用に緯度経度を手動で入れれるようにしています。(EMにはいらないコード)
 goal = (35.86513476045121, 139.6074040979085)
 goal_latitude = goal[0]
 goal_longtitude = goal[1]
@@ -88,19 +93,75 @@ cansat = (35.86505976922859, 139.60741482674408)
 latitude = cansat[0]
 longtitude = cansat[1]
 Mag = (0.000000,1.000000)
+#----------------------------------------------------------
+#ここから下をEMにコピーしてください。Test用にモーターを動かす部分とデータ取得の部分をコメントアウトしているので動かす際には復活させといてください
 
+#以下がデータ取得部分。コピペして、コメントアウトを外す際にはインデントに注意してください。
+# # UART(GPS)受信データ取得
+# try:
+# sentence = uart.readline()
+
+# except Exception as e:
+# print(f"An error occured in getting data from serial 0: {e}")
+
+# # GPS緯度経度読み取り
+# try:
+# if len(sentence) > 0:
+# for x in sentence:
+#     if 10 <= x <= 126:
+#         try:
+#             stat = gnss.update(chr(x))
+#         #print("stat:",stat,"x:",x,"chr:",chr(x))
+#         #print(chr(x))
+#         except Exception as e:
+#                 print(f"An error occured in updating GPS data: {e}")
+        
+#         if stat:
+#             try:
+#                 tm = gnss.timestamp
+#                 # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
+#                 latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+#                 # print('=' * 20)
+#                 print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
+#                 print("latitude:", gnss.latitude[0])
+#                 print("longitude:", gnss.longitude[0])
+#             except Exception as e:
+#                     print(f"An error occured in loading GPS data : {e}")
+
+# except Exception as e:
+# print(f"An error occured in reading GPS tm, lat,lon: {e}")
+
+
+# # "BNO055(9軸)"を使うコード
+# # 地磁気Mag，ジャイロGyro，重力加速度を除く加速度Accel，除かない加速度Accel＿あｌｌ)を取得できる"
+# # bno055データ取得
+# try:
+# #Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+# Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+# #Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+# #Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+# #print("Gyro: ", Gyro)
+# print("Mag: ", Mag)
+# #print("Accel", Accel)
+# #print("Accel_all", Accel_all)
+# except Exception as e:
+# print(f"An error occured in reading bno055: {e}")
+
+#以下は取得したデータを処理するコードです。
+#1.ゴールの緯度経度をCanSat中心のxy座標で表す。
 goal_xy = calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
-#3.緯度経度→→→ゴールと機体の距離を求める
+#2.緯度経度→→→ゴールと機体の距離を求める
 print(goal_xy)
 print(goal_xy[0])
 cansat_to_goal_y_sq = (goal_xy[1])**2
 cansat_to_goal_x_sq = (goal_xy[0])**2
-
 distance = np.sqrt(cansat_to_goal_x_sq + cansat_to_goal_y_sq)
-#4.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める(ヒント：arctan)
+#3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
+#やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
+#North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
 North_angle_rad = np.arctan2(Mag[1],Mag[0])
 cansat_to_goal = Rotation_clockwise_xy(goal_xy,North_angle_rad - math.pi)
-#North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
+#4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
 cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
 cansat_to_goal_angle_degree = math.degrees(cansat_to_goal_angle) + 180
 #5.機体の正面とゴールの向きの関係から、右に曲がるか、左に曲がるか、正面に進むか判断する
