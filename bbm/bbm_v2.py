@@ -37,8 +37,8 @@ def main():
         v_bno = LED(11)
         v_bno.on()
         #BNOのリセットピンをHighにする
-        v_bno = LED(24)
-        v_bno.on()
+        v_bno_reset = LED(24)
+        v_bno_reset.on()
 
         #BMPの電源ピンをHighにする
         v_bme = LED(22)
@@ -58,8 +58,8 @@ def main():
     try:
         PIN_AIN1 = 4
         PIN_AIN2 = 23
-        PIN_BIN1 = 5
-        PIN_BIN2 = 13
+        PIN_BIN1 = 13
+        PIN_BIN2 = 5
 
         motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
