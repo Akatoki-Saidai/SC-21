@@ -224,6 +224,7 @@ class BNO055:
 		if self.readBytes(BNO055.BNO055_CHIP_ID_ADDR)[0] != BNO055.BNO055_ID:
 			time.sleep(1)	# Wait for the device to boot up
 			if self.readBytes(BNO055.BNO055_CHIP_ID_ADDR)[0] != BNO055.BNO055_ID:
+				# time.sleep(1)
 				return False
 
 		# Switch to config mode
@@ -315,8 +316,13 @@ class BNO055:
 			csv.print('mag', result_vector)
 		else:
 			scalingFactor = 1.0
+<<<<<<< HEAD
+		time.sleep(0.1)
+		return tuple(result_vector)
+=======
 			result_vector = [i/scalingFactor for i in xyz]
 		return result_vector
+>>>>>>> 27d6b568c767fb75703ac2f4113b62252a7e02d0
 
 	def getQuat(self):
 		buf = self.readBytes(BNO055.BNO055_QUATERNION_DATA_W_LSB_ADDR, 8)
@@ -324,9 +330,11 @@ class BNO055:
 		return tuple([i * (1.0 / (1 << 14)) for i in wxyz])
 
 	def readBytes(self, register, numBytes=1):
+		# time.sleep(0.1)
 		return self._bus.read_i2c_block_data(self._address, register, numBytes)
 
 	def writeBytes(self, register, byteVals):
+		# time.sleep(0.1)
 		return self._bus.write_i2c_block_data(self._address, register, byteVals)
 
 

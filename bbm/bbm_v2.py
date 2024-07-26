@@ -5,13 +5,13 @@ from gpiozero import LED
 from picamera2 import Picamera2
 
 # scに使用ライブラリほぼまとめました
-from sc import motor
-import sc.print_override as override
-from sc.camera import Camera
-import sc.csv_print as csv
-from sc.bmp280 import BMP280
-from sc.bno055 import BNO055
-from sc.micropyGPS import MicropyGPS
+import motor
+import print_override as override
+from camera import Camera
+import csv_print as csv
+from bmp280 import BMP280
+from bno055 import BNO055
+from micropyGPS import MicropyGPS
 
 
 # mainゾーン
@@ -43,6 +43,9 @@ def main():
         #BMPの電源ピンをHighにする
         v_bme = LED(22)
         v_bme.on()
+        
+        # wait
+        time.sleep(3)
 
         #LEDもつけてみる
         LED_1 = LED(27)
