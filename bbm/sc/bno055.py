@@ -296,6 +296,7 @@ class BNO055:
 			csv.print('gyro', tuple([i/scalingFactor for i in xyz]))
 		elif vectorType == BNO055.VECTOR_EULER:
 			scalingFactor = 16.0
+			csv.print('euler', tuple([i/scalingFactor for i in xyz]))
 		elif vectorType == BNO055.VECTOR_GRAVITY:
 			scalingFactor = 100.0
 			csv.print('grav', tuple([i/scalingFactor for i in xyz]))
