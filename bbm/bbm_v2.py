@@ -34,16 +34,21 @@ def main():
 
     try:
         #BNOの電源ピンをHighにする
-        v_bno = LED(9)
+        v_bno = LED(11)
+        v_bno.on()
+        #BNOのリセットピンをHighにする
+        v_bno = LED(24)
         v_bno.on()
 
-        #BMEの電源ピンをHighにする
-        v_bme = LED(27)
+        #BMPの電源ピンをHighにする
+        v_bme = LED(22)
         v_bme.on()
 
         #LEDもつけてみる
-        LED_1 = LED(23)
+        LED_1 = LED(27)
         LED_1.on()
+        LED_2 = LED(10)
+        LED_2.on()
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
         csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
@@ -51,10 +56,10 @@ def main():
 
     # モータードライバセットアップ
     try:
-        PIN_AIN1 = 13
-        PIN_AIN2 = 5
-        PIN_BIN1 = 17
-        PIN_BIN2 = 4
+        PIN_AIN1 = 4
+        PIN_AIN2 = 23
+        PIN_BIN1 = 5
+        PIN_BIN2 = 13
 
         motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
