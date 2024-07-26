@@ -3,7 +3,7 @@
 import time
 import copy
 
-msg_types = ['monotonic', 'error', 'warning', 'msg', 'fase', 'alt', 'temp', 'press', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_x', 'accel_y', 'accel_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'time', 'date']
+msg_types = ['monotonic', 'serious', 'error', 'warning', 'msg', 'phase', 'alt', 'temp', 'press', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_x', 'accel_y', 'accel_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'time', 'date', 'lat', 'lon']
 DEFAULT_DICT = {x : '' for x in msg_types}
 
 filename = 'csv_log_test.txt'
