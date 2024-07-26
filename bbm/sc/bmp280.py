@@ -225,4 +225,5 @@ class BMP280:
             time.sleep(0.1)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
     
+        csv.print('alt_base_press', baseline)
         return baseline

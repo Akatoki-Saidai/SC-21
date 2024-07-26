@@ -13,6 +13,7 @@ import sc.print_override as override
 from sc.bmp280 import BMP280
 from sc.bno055 import BNO055
 from sc.micropyGPS import MicropyGPS
+import sc.csv_print as csv
 
 
 # mainゾーン
@@ -30,6 +31,7 @@ def main():
         uart = serial.Serial('/dev/serial0', 38400, timeout = 10)
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
+        csv.print('serious_error', f"An error occured in setting serial 0: {e}")
 
 
     try:
@@ -46,6 +48,7 @@ def main():
         LED_1.on()
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
+        csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
 
 
     # gpsのセットアップ
@@ -53,6 +56,7 @@ def main():
         gnss = MicropyGPS(9, 'dd')
     except Exception as e:
         print(f"An error occured in setting gps object: {e}")
+        csv.print('serious_error', f"An error occured in setting gps object: {e}")
 
 
     #bno055のセットアップ
@@ -65,6 +69,7 @@ def main():
         bno.setExternalCrystalUse(True)
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
+        csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
         
 
     #bmp280のセットアップ
@@ -75,7 +80,8 @@ def main():
         temperature = []
         pressure = []
     except Exception as e:
-            print(f"An error occured in setting bmp280 object: {e}")
+        print(f"An error occured in setting bmp280 object: {e}")
+        csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
 
     # bmp280高度算出用基準気圧取得
     try:
@@ -87,8 +93,10 @@ def main():
             baseline_values.append(pressure)
             time.sleep(0.5)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
+        csv.print('alt_base_press', baseline)
     except Exception as e:
-            print(f"An error occured in getting bmp280 data: {e}")
+        print(f"An error occured in getting bmp280 data: {e}")
+        csv.print('serious_error', f"An error occured in getting bmp280 data: {e}")
 
 
     # ---繰り返しゾーン---
@@ -99,9 +107,10 @@ def main():
         try:
             sentence = uart.readline()
         except Exception as e:
-                print(f"An error occured in getting data from serial 0: {e}")
-                # print(len(sentence))
-                # continue
+            print(f"An error occured in getting data from serial 0: {e}")
+            csv.print('error', f"An error occured in getting data from serial 0: {e}")
+            # print(len(sentence))
+            # continue
 
         # GPS緯度経度読み取り
         try:
@@ -114,6 +123,7 @@ def main():
                         #print(chr(x))
                         except Exception as e:
                                 print(f"An error occured in updating GPS data: {e}")
+                                csv.print('error', f"An error occured in updating GPS data: {e}")
                         
                         if stat:
                             try:
@@ -124,8 +134,11 @@ def main():
                                 print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                 print("latitude:", gnss.latitude[0])
                                 print("longitude:", gnss.longitude[0])
+                                csv.print('lat', gnss.latitude)
+                                csv.print('lon', gnss.longitude)
                             except Exception as e:
-                                    print(f"An error occured in loading GPS data : {e}")
+                                print(f"An error occured in loading GPS data : {e}")
+                                csv.print('error', f"An error occured in loading GPS data : {e}")
 
         except Exception as e:
             print(f"An error occured in reading GPS tm, lat,lon: {e}")
@@ -143,6 +156,7 @@ def main():
             print("Accel_all", Accel_all)
         except Exception as e:
             print(f"An error occured in reading bno055: {e}")
+            csv.print('error', f"An error occured in reading bno055: {e}")
     
         # bmp280データ取得(基準高度参照)
         try:
@@ -161,6 +175,7 @@ def main():
 
         except Exception as e:
             print(f"An error occured in reading bmp280: {e}")
+            csv.print('error', f"An error occured in reading bmp280: {e}")
 
 
         try:
@@ -168,14 +183,17 @@ def main():
             for i in range(100):
                 memory_state = psutil.virtual_memory()
                 print("memory: ", memory_state.percent)
+                csv.print('msg', f'memory : {memory_state.percent}')
                 time.sleep(0.1)
 
             gc.collect()
             memory_state = psutil.virtual_memory()
             print("memory: ", memory_state.percent)
+            csv.print('msg', f'memory : {memory_state.percent}')
 
         except Exception as e:
              print(f"An error occured in surveying memoryleak: {e}")
+             csv.print('serious_error', f"An error occured in surveying memoryleak: {e}")
 
 
 
