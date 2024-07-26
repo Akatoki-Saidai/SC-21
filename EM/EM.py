@@ -131,8 +131,16 @@ def main():
                 # ここにコードを記述(担当：菅原)
                 
                 # bmp280で高度(altitude)を計測
-
-                # 高度をprint
+                try:
+                    # temperature = bmp.get_temperature()
+                    # pressure = bmp.get_pressure()
+                    altitude = bmp.get_altitude(qnh=baseline)
+                    # print(f"temperture{temperature:05.2f}*C")
+                    # print(f"pressure: {pressure:05.2f}hPa")
+                    print(f"Relative altitude: {altitude:05.2f} metres")
+                except Exception as e:
+                    print(f"An error occured in reading bmp: {e}")
+                        # 高度をprint
 
 
             except Exception as e:
@@ -141,7 +149,7 @@ def main():
 
             # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
             # 条件式を記述し，フェーズ移行
-            if ():
+            if (altitude - baseline > 10):
                 phase = 1
                 print("Go to falling phase")
 
