@@ -137,10 +137,10 @@ def main():
                     altitude = bmp.get_altitude(qnh=baseline)
                     # print(f"temperture{temperature:05.2f}*C")
                     # print(f"pressure: {pressure:05.2f}hPa")
+                # 高度をprint
                     print(f"Relative altitude: {altitude:05.2f} metres")
                 except Exception as e:
                     print(f"An error occured in reading bmp: {e}")
-                        # 高度をprint
 
 
             except Exception as e:
@@ -169,21 +169,39 @@ def main():
                 # ここにコードを記述(担当：)
 
                 # bmpの高度(altitude)取得
-                
+                try:
+                    # temperature = bmp.get_temperature()
+                    # pressure = bmp.get_pressure()
+                    altitude = bmp.get_altitude(qnh=baseline)
+                    # print(f"temperture{temperature:05.2f}*C")
+                    # print(f"pressure: {pressure:05.2f}hPa")
                 # 高度をprint
+                    print(f"Relative altitude: {altitude:05.2f} metres")
+                except Exception as e:
+                    print(f"An error occured in reading bmp: {e}")                
 
                 # bnoの重力加速度を除いた加速度(Accel)を取得
-
+                try:
+                    Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                    # Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                    Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                    # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                    print("Gyro: ", Gyro)
+                    # print("Mag: ", Mag)
                 # 加速度をprint
-
-
+                    print("Accel", Accel)
+                    # print("Accel_all", Accel_all)
+                except Exception as e:
+                    print(f"An error occured in reading bno055: {e}")
+    
             except Exception as e:
                 print(f"An error occured in falling phase: {e}")
 
 
             # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行
             # 条件式を記述し，フェーズ移行
-            if ():
+            #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
+            if (-3 < altitude - baseline < 3 and 2 < Accel[2]< 2):
                 phase = 2
                 print("Go to long phase")
 
