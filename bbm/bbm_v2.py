@@ -58,8 +58,8 @@ def main():
     try:
         PIN_AIN1 = 4
         PIN_AIN2 = 23
-        PIN_BIN1 = 5
-        PIN_BIN2 = 13
+        PIN_BIN1 = 13
+        PIN_BIN2 = 5
 
         motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
