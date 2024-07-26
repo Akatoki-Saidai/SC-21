@@ -3,7 +3,7 @@
 import time
 import copy
 
-msg_types = ['monotonic', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_x', 'goal_y', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z']
+msg_types = ['monotonic', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'alt_base_press', 'goal_lat', 'goal_lon', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_x', 'goal_y', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z']
 DEFAULT_DICT = {x : '' for x in msg_types}
 
 filename = 'csv_log_test.txt'
