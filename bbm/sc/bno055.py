@@ -9,6 +9,8 @@ import smbus
 import time
 import struct
 
+# 測定値の出力用
+import csv_print as csv
 
 
 
@@ -286,13 +288,25 @@ class BNO055:
 	def getVector(self, vectorType):
 		buf = self.readBytes(vectorType, 6)
 		xyz = struct.unpack('hhh', struct.pack('BBBBBB', buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]))
-		if vectorType == BNO055.VECTOR_MAGNETOMETER:	scalingFactor = 16.0
-		elif vectorType == BNO055.VECTOR_GYROSCOPE:	scalingFactor = 900.0
-		elif vectorType == BNO055.VECTOR_EULER: 		scalingFactor = 16.0
-		elif vectorType == BNO055.VECTOR_GRAVITY:	scalingFactor = 100.0
-		elif vectorType == BNO055.VECTOR_LINEARACCEL:	scalingFactor = 100.0
-		elif vectorType == BNO055.VECTOR_ACCELEROMETER:	scalingFactor = 100.0
-		else:											scalingFactor = 1.0
+		if vectorType == BNO055.VECTOR_MAGNETOMETER:
+			scalingFactor = 16.0
+			csv.print('mag', tuple([i/scalingFactor for i in xyz]))
+		elif vectorType == BNO055.VECTOR_GYROSCOPE:
+			scalingFactor = 900.0
+			csv.print('gyro', tuple([i/scalingFactor for i in xyz]))
+		elif vectorType == BNO055.VECTOR_EULER:
+			scalingFactor = 16.0
+		elif vectorType == BNO055.VECTOR_GRAVITY:
+			scalingFactor = 100.0
+			csv.print('grav', tuple([i/scalingFactor for i in xyz]))
+		elif vectorType == BNO055.VECTOR_LINEARACCEL:
+			scalingFactor = 100.0
+			csv.print('accel_line', tuple([i/scalingFactor for i in xyz]))
+		elif vectorType == BNO055.VECTOR_ACCELEROMETER:
+			scalingFactor = 100.0
+			csv.print('accel_all', tuple([i/scalingFactor for i in xyz]))
+		else:
+			scalingFactor = 1.0
 		return tuple([i/scalingFactor for i in xyz])
 
 	def getQuat(self):

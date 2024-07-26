@@ -7,6 +7,9 @@ import time
 from i2cdevice import BitField, Device, Register, _int_to_bytes
 from i2cdevice.adapter import Adapter, LookupAdapter
 
+# 測定値の出力用
+import csv_print as csv
+
 __version__ = "1.0.0"
 
 
@@ -195,6 +198,8 @@ class BMP280:
 
     def get_temp_pres(self):
         self.update_sensor()
+        csv.print('temp', self.temperature)
+        csv.print('press', self.pressure)
         return self.temperature, self.pressure
 
     def get_altitude(self, qnh=1013.25, manual_temperature=None):
@@ -207,6 +212,7 @@ class BMP280:
         else:
             temperature = manual_temperature
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
+        csv.print('alt', altitude)
         return altitude
     
     def get_baseline(self):

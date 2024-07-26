@@ -3,7 +3,7 @@
 import time
 import copy
 
-msg_types = ['monotonic', 'serious', 'error', 'warning', 'msg', 'phase', 'alt', 'temp', 'press', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_x', 'accel_y', 'accel_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'time', 'date', 'lat', 'lon']
+msg_types = ['monotonic', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'temp', 'press', 'motor_l', 'motor_r', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z']
 DEFAULT_DICT = {x : '' for x in msg_types}
 
 filename = 'csv_log_test.txt'
@@ -13,7 +13,7 @@ with open(filename, 'a') as f:
 
 def print(msg_type : str, msg_data):
     output_dict = copy.deepcopy(DEFAULT_DICT)
-    if (msg_type == 'accel_all') or (msg_type == 'accel') or (msg_type == 'mag') or (msg_type == 'gyro'):
+    if (msg_type == 'accel_all') or (msg_type == 'accel_line') or (msg_type == 'mag') or (msg_type == 'gyro') or (msg_type == 'grav'):
         output_dict[msg_type + '_x'] = str(msg_data[0])
         output_dict[msg_type + '_y'] = str(msg_data[1])
         output_dict[msg_type + '_z'] = str(msg_data[2])
