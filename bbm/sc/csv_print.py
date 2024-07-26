@@ -17,6 +17,9 @@ def print(msg_type : str, msg_data):
         output_dict[msg_type + '_x'] = str(msg_data[0])
         output_dict[msg_type + '_y'] = str(msg_data[1])
         output_dict[msg_type + '_z'] = str(msg_data[2])
+    elif (msg_type == 'motor'):
+        output_dict[msg_type + '_l'] = str(msg_data[0])
+        output_dict[msg_type + '_r'] = str(msg_data[1])
     else:
         output_dict[msg_type] = str(msg_data)
     output_dict['monotonic'] = str(time.monotonic_ns())

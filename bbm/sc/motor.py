@@ -2,6 +2,8 @@ import time
 from gpiozero import Motor
 from gpiozero.pins.pigpio import PiGPIOFactory
 
+# 制御量の出力用
+import csv_print as csv
 
 
 def setup(AIN1, AIN2, BIN1, BIN2):
@@ -29,10 +31,12 @@ def accel(right, left):
     for i in range(int(1 / 0.05)):
         right.value = power
         left.value = power
+        csv.print('motor', [power, power])
         power += 0.05
 
     right.value = 1
     left.value = 1
+    csv.print('motor', [1, 1])
 
 
 def brake(right, left):
@@ -42,6 +46,7 @@ def brake(right, left):
     for i in range(int(1 / 0.05)):
         right.value = power_r
         left.value = power_l
+        csv.print('motor', [power_l, power_r])
         if power_r > 0:
             power_r -= 0.05
         elif power_r < 0:
@@ -59,23 +64,27 @@ def brake(right, left):
 
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
 
 
 def rightturn(right, left):
     
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
     power = 0
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = power
             left.value = -1 * power
+            csv.print('motor', [-1 * power, power])
         
         power += 0.05
 
     power = 1
     right.value = 1
     left.value = -1
+    csv.print('motor', [-1, 1])
 
     time.sleep(1)
 
@@ -83,11 +92,13 @@ def rightturn(right, left):
         if (-1 <= power <= 1):
             right.value = power
             left.value = -1 * power
+            csv.print('motor', [-1 * power, power])
         
         power -= 0.05
 
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
 
 
 
@@ -96,17 +107,20 @@ def leftturn(right, left):
     
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
     power = 0
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = -1 * power
             left.value = power
+            csv.print('motor', [power, -1 * power])
         
         power += 0.05
 
     power = 1
     right.value = -1
     left.value = 1
+    csv.print('motor', [1, -1])
 
     time.sleep(1)
 
@@ -114,11 +128,13 @@ def leftturn(right, left):
         if (-1 <= power <= 1):
             right.value = -1 * power
             left.value = power
+            csv.print('motor', [power, -1 * power])
         
         power -= 0.05
             
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
 
     
 
@@ -128,26 +144,31 @@ def rightonly(right, left):
     
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
 
     power = 0
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = power
+            csv.print('motor_r', power)
 
         power += 0.05
 
     power = 1
     right.value = 1
+    csv.print('motor_r', 1)
 
     time.sleep(1)
 
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             right.value = power
+            csv.print('motor_r', power)
             
         power -= 0.05
 
     right.value = 0
+    csv.print('motor_r', 0)
 
 
 
@@ -156,23 +177,28 @@ def leftonly(right, left):
     
     right.value = 0
     left.value = 0
+    csv.print('motor', [0, 0])
     power = 0
 
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             left.value = power
+            csv.print('motor_l', power)
         
         power += 0.05
 
     power = 1
     left.value = 1
+    csv.print('motor_l', 1)
 
     time.sleep(1)
 
     for i in range(int(1 / 0.05)):
         if (-1 <= power <= 1):
             left.value = power
+            csv.print('motor_l', power)
         
         power -= 0.05
         
     left.value = 0
+    csv.print('motor_l', 0)
