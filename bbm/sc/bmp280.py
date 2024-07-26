@@ -1,5 +1,6 @@
 """BMP280 Driver."""
 
+
 import struct
 import time
 
@@ -202,7 +203,7 @@ class BMP280:
         # Use the manual_temperature variable if temperature adjustments are required.
         _, pressure = self.get_temp_pres()
         if manual_temperature is None:
-            temperature = self.get_temperature()
+            temperature, _ = self.get_temp_pres()
         else:
             temperature = manual_temperature
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
@@ -213,7 +214,7 @@ class BMP280:
         baseline_size = 100
 
         for i in range(baseline_size):
-            pressure = self.get_pressure()
+            _, pressure = self.get_temp_pres()
             baseline_values.append(pressure)
             time.sleep(0.1)
         baseline = sum(baseline_values[:-25]) / len(baseline_values[:-25])
