@@ -22,6 +22,10 @@ except ImportError:
     import time
 
 
+# 測定値の出力用
+import csv_print as csv
+
+
 class MicropyGPS(object):
     """GPS NMEA Sentence Parser. Creates object that stores all relevant GPS data and statistics.
     Parses sentences one character at a time using update(). """
@@ -107,6 +111,7 @@ class MicropyGPS(object):
         """Format Latitude Data Correctly"""
         if self.coord_format == 'dd':
             decimal_degrees = self._latitude[0] + (self._latitude[1] / 60)
+            csv.print('lat', decimal_degrees)  # 測地値を記録
             return [decimal_degrees, self._latitude[2]]
         elif self.coord_format == 'dms':
             minute_parts = modf(self._latitude[1])
@@ -120,6 +125,7 @@ class MicropyGPS(object):
         """Format Longitude Data Correctly"""
         if self.coord_format == 'dd':
             decimal_degrees = self._longitude[0] + (self._longitude[1] / 60)
+            csv.print('lon', decimal_degrees)  # 測地値を記録
             return [decimal_degrees, self._longitude[2]]
         elif self.coord_format == 'dms':
             minute_parts = modf(self._longitude[1])
@@ -812,6 +818,7 @@ class MicropyGPS(object):
             else:  # Default date format
                 date_string = month + '/' + day + '/' + year
 
+        csv.print('time', f'{year}-{month}-{day}T{self.timestamp[0]}:{self.timestamp[1]}:{self.timestamp[2]}Z')  # 測定値を記録
         return date_string
 
     # All the currently supported NMEA sentences
