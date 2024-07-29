@@ -194,8 +194,8 @@ class BMP280:
         
         # 3回測定して中央値を求める
 
-        temp = []
-        press = []
+        temp = [-1000,-1000,-1000]
+        press = [-1000,-1000,-1000]
 
         for i in range(3):
             raw = self._bmp280.get("DATA")

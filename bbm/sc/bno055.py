@@ -288,7 +288,7 @@ class BNO055:
 		return self.readBytes(BNO055.BNO055_TEMP_ADDR)[0]
 
 	def getVector(self, vectorType):
-		x_data, y_data, z_data = [], [], []
+		x_data, y_data, z_data = [-1000,-1000,-1000], [-1000,-1000,-1000], [-1000,-1000,-1000]
 		for i in range(3):
 			# 3回測定
 			buf = self.readBytes(vectorType, 6)
@@ -297,9 +297,9 @@ class BNO055:
 			time.sleep(0.0001)
 
 		# 中央値を使用
-		xyz_m = tuple(median(x_data), median(y_data), median(z_data))
+		xyz_m = [median(x_data), median(y_data), median(z_data)]
 
-		result_vector = []
+		result_vector = [-1000,-1000,-1000]
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
 			result_vector = [i/scalingFactor for i in xyz_m]
