@@ -297,32 +297,27 @@ class BNO055:
 		elif vectorType == BNO055.VECTOR_GYROSCOPE:
 			scalingFactor = 900.0
 			result_vector = [i/scalingFactor for i in xyz]
-			csv.print('mag', result_vector)
+			csv.print('gyro', result_vector)
 		elif vectorType == BNO055.VECTOR_EULER:
 			scalingFactor = 16.0
 			result_vector = [i/scalingFactor for i in xyz]
-			csv.print('mag', result_vector)
+			csv.print('euler', result_vector)
 		elif vectorType == BNO055.VECTOR_GRAVITY:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz]
-			csv.print('mag', result_vector)
+			csv.print('grav', result_vector)
 		elif vectorType == BNO055.VECTOR_LINEARACCEL:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz]
-			csv.print('mag', result_vector)
+			csv.print('accel_line', result_vector)
 		elif vectorType == BNO055.VECTOR_ACCELEROMETER:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz]
-			csv.print('mag', result_vector)
+			csv.print('accel_all', result_vector)
 		else:
 			scalingFactor = 1.0
-<<<<<<< HEAD
 		time.sleep(0.1)
 		return tuple(result_vector)
-=======
-			result_vector = [i/scalingFactor for i in xyz]
-		return result_vector
->>>>>>> 27d6b568c767fb75703ac2f4113b62252a7e02d0
 
 	def getQuat(self):
 		buf = self.readBytes(BNO055.BNO055_QUATERNION_DATA_W_LSB_ADDR, 8)
