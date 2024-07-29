@@ -8,6 +8,7 @@
 import smbus
 import time
 import struct
+from statistics import median
 
 # 測定値の出力用
 import csv_print as csv
@@ -287,32 +288,41 @@ class BNO055:
 		return self.readBytes(BNO055.BNO055_TEMP_ADDR)[0]
 
 	def getVector(self, vectorType):
-		buf = self.readBytes(vectorType, 6)
-		xyz = struct.unpack('hhh', struct.pack('BBBBBB', buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]))
+		x_data, y_data, z_data = [], [], []
+		for i in range(3):
+			# 3回測定
+			buf = self.readBytes(vectorType, 6)
+			xyz = struct.unpack('hhh', struct.pack('BBBBBB', buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]))
+			x_data[i], y_data[i], z_data[i] = xyz[0], xyz[1], xyz[2]
+			time.sleep(0.0001)
+
+		# 中央値を使用
+		xyz_m = tuple(median(x_data), median(y_data), median(z_data))
+
 		result_vector = []
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_GYROSCOPE:
 			scalingFactor = 900.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('gyro', result_vector)
 		elif vectorType == BNO055.VECTOR_EULER:
 			scalingFactor = 16.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('euler', result_vector)
 		elif vectorType == BNO055.VECTOR_GRAVITY:
 			scalingFactor = 100.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('grav', result_vector)
 		elif vectorType == BNO055.VECTOR_LINEARACCEL:
 			scalingFactor = 100.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('accel_line', result_vector)
 		elif vectorType == BNO055.VECTOR_ACCELEROMETER:
 			scalingFactor = 100.0
-			result_vector = [i/scalingFactor for i in xyz]
+			result_vector = [i/scalingFactor for i in xyz_m]
 			csv.print('accel_all', result_vector)
 		else:
 			scalingFactor = 1.0

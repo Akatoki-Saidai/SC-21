@@ -202,6 +202,8 @@ class BMP280:
 
             temp[i] = self.calibration.compensate_temperature(raw.temperature)
             press[i] = self.calibration.compensate_pressure(raw.pressure) / 100.0
+
+            time.sleep(0.0001)
         
         self.temperature = median(temp)
         self.pressure = median(press)
