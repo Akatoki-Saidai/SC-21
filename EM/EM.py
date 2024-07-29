@@ -116,6 +116,7 @@ def main():
         print("baseline: ", baseline)
         csv.print('alt_base_press', baseline)
         first_altitude = bmp.get_altitude()
+        csv.print('msg', f'first_altitude: {first_altitude}')
 
     except Exception as e:
         print(f"An error occured in getting bmp data: {e}")
@@ -213,13 +214,16 @@ def main():
                     print(f"An error occured in reading bno055: {e}")
                     csv.print('error', f"An error occured in reading bno055: {e}")
 
-                # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行
+                # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
                 # 条件式を記述し，フェーズ移行
                 #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-                if (-3 < altitude - baseline < 3 and -2 < Accel[2]< 2):
-                    phase = 2
-                    print("Go to long phase")
-                    csv.print('msg', "Go to long phase")
+                if altitude - first_altitude < 3 and sum(abs(Accel)) < 1.5 and sum(abs(Gyro)) < 1.0:
+                    time.sleep(0.5)
+                    Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                    if sum(abs(Accel)) < 1.5 and sum(abs(Gyro)) < 1.0:  # 0.5s後にもう一度判定
+                        phase = 2
+                        print("Go to long phase")
+                        csv.print('msg', "Go to long phase")
 
                 else:
                     pass
