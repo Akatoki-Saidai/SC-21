@@ -86,7 +86,7 @@ def main():
             print("Error initializing device")
             pass
         time.sleep(1)
-        bno.setExternalCrystalUse(True)
+        # bno.setExternalCrystalUse(True)
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
         csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
