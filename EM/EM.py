@@ -13,7 +13,7 @@ from sc.camera import Camera
 from sc.bmp280 import BMP280
 from sc.bno055 import BNO055
 from sc.micropyGPS import MicropyGPS
-from sc import csvprint
+from sc import csv_print as csv
 from sc import calc_xy
 
 # mainゾーン
@@ -25,10 +25,14 @@ def main():
     # フェーズ，ゴール設定
     try:
         phase = 0
+        csv.print('phase', phase)
         goal_latitude = 40.142621667
+        csv.print('goal_lat', goal_latitude)
         goal_longtitude = 139.987548333
+        csv.print('goal_lon', goal_longtitude)
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
+        csv.print('serious_error', f"An error occured in initialize phase and goal: {e}")
 
     # 少々ここらで(print関数を)オーバーライド
     # ※printしたものがログファイルにも行きます
@@ -40,6 +44,7 @@ def main():
         uart = serial.Serial('/dev/serial0', 38400, timeout = 10)
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
+        csv.print('serious_error', f"An error occured in setting serial 0: {e}")
 
 
     try:
@@ -59,6 +64,7 @@ def main():
         LED_1.on()
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
+        csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
 
 
     # モータードライバセットアップ
@@ -72,6 +78,7 @@ def main():
 
     except Exception as e:
         print(f"An error occured in setting motor_driver: {e}")
+        csv.print('serious_error', f"An error occured in setting motor_driver: {e}")
 
 
     # gpsのセットアップ
@@ -79,6 +86,7 @@ def main():
         gnss = MicropyGPS(9, 'dd')
     except Exception as e:
         print(f"An error occured in setting gps object: {e}")
+        csv.print('serious_error', f"An error occured in setting gps object: {e}")
 
 
     #bno055のセットアップ
@@ -91,6 +99,7 @@ def main():
         bno.setExternalCrystalUse(True)
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
+        csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
         
 
     #bmp280のセットアップ
@@ -98,16 +107,19 @@ def main():
         bus = SMBus(1)
         bmp = BMP280(i2c_dev=bus)
     except Exception as e:
-            print(f"An error occured in setting bmp object: {e}")
+        print(f"An error occured in setting bmp object: {e}")
+        csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
 
     # bmp280高度算出用基準気圧取得
     try:
         baseline = bmp.get_baseline()
         print("baseline: ", baseline)
+        csv.print('alt_base_press', baseline)
         first_altitude = bmp.get_altitude()
 
     except Exception as e:
         print(f"An error occured in getting bmp data: {e}")
+        csv.print('serious_error', f"An error occured in getting bmp280 data: {e}")
 
     # カメラセットアップ
     try:
@@ -119,12 +131,15 @@ def main():
 
     except Exception as e:
         print(f"An error occurred in init camera: {e}")
+        csv.print('serious_error', f"An error occurred in init camera: {e}")
 
 
 
     # ---繰り返しゾーン---
 
     while True:
+
+        csv.print('phase', phase)
 
         # ************************************************** #
         #             待機フェーズ(phase = 0)                #
@@ -143,20 +158,22 @@ def main():
                     print(f"Relative altitude: {altitude:05.2f} metres")
                 except Exception as e:
                     print(f"An error occured in reading bmp: {e}")
+                    csv.print('error', f"An error occured in reading bmp: {e}")
 
+                # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
+                # 条件式を記述し，フェーズ移行
+                if (altitude - first_altitude > 10):
+                    phase = 1
+                    print("Go to falling phase")
+                    csv.print('msg', 'Go to falling phase')
+                else:
+                    pass
 
             except Exception as e:
                 print(f"An error occured in waiting phase: {e}")
+                csv.print('error', f"An error occured in waiting phase: {e}")
 
 
-            # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
-            # 条件式を記述し，フェーズ移行
-            if (altitude - first_altitude > 10):
-                phase = 1
-                print("Go to falling phase")
-
-            else:
-                pass
 
 
         # 高度がある程度(本番は50m，あとで調整するので暫定でお願い)高くなったら落下フェーズに移行
@@ -178,7 +195,8 @@ def main():
                 # 高度をprint
                     print(f"Relative altitude: {altitude:05.2f} metres")
                 except Exception as e:
-                    print(f"An error occured in reading bmp: {e}")                
+                    print(f"An error occured in reading bmp: {e}")
+                    csv.print('error', f"An error occured in reading bmp: {e}")
 
                 # bnoの重力加速度を除いた加速度(Accel)を取得
                 try:
@@ -193,22 +211,26 @@ def main():
                     # print("Accel_all", Accel_all)
                 except Exception as e:
                     print(f"An error occured in reading bno055: {e}")
+                    csv.print('error', f"An error occured in reading bno055: {e}")
+
+                # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行
+                # 条件式を記述し，フェーズ移行
+                #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
+                if (-3 < altitude - baseline < 3 and -2 < Accel[2]< 2):
+                    phase = 2
+                    print("Go to long phase")
+                    csv.print('msg', "Go to long phase")
+
+                else:
+                    pass
     
             except Exception as e:
                 print(f"An error occured in falling phase: {e}")
-
-
-            # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行
-            # 条件式を記述し，フェーズ移行
-            #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-            if (-3 < altitude - baseline < 3 and 2 < Accel[2]< 2):
-                phase = 2
-                print("Go to long phase")
-
-            else:
-                pass
-
+                csv.print('error', f"An error occured in falling phase: {e}")
+            
         # z方向の加速度が0，altitudeがbaselineから±3になったら落下フェーズに移行
+            
+
 
         # ************************************************** #
         #            遠距離フェーズ(phase = 2)               #
@@ -223,6 +245,7 @@ def main():
 
                 except Exception as e:
                     print(f"An error occured in getting data from serial 0: {e}")
+                    csv.print('error', f"An error occured in getting data from serial 0: {e}")
 
 
                 # GPSの緯度経度取得
@@ -235,7 +258,8 @@ def main():
                                 #print("stat:",stat,"x:",x,"chr:",chr(x))
                                 #print(chr(x))
                                 except Exception as e:
-                                        print(f"An error occured in updating GPS data: {e}")
+                                    print(f"An error occured in updating GPS data: {e}")
+                                    csv.print('error', f"An error occured in updating GPS data: {e}")
                                 
                                 if stat:
                                     try:
@@ -247,10 +271,12 @@ def main():
                                         print("latitude:", gnss.latitude[0])
                                         print("longitude:", gnss.longitude[0])
                                     except Exception as e:
-                                            print(f"An error occured in loading GPS data : {e}")
+                                        print(f"An error occured in loading GPS data : {e}")
+                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
 
                 except Exception as e:
                     print(f"An error occured in reading GPS tm, lat,lon: {e}")
+                    csv.print('error', f"An error occured in reading GPS tm, lat,lon: {e}")
 
 
                 # bno055地磁気Magを取得
@@ -265,6 +291,7 @@ def main():
                     # print("Accel_all", Accel_all)
                 except Exception as e:
                     print(f"An error occured in reading bno055: {e}")
+                    csv.print('error', f"An error occured in reading bno055: {e}")
 
 
                 # 計算過程はcalc_xyに定義
@@ -274,12 +301,14 @@ def main():
                     goal_xy = calc_xy.calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
                     
                     #2.緯度経度→→→ゴールと機体の距離を求める
-                    print("goal xy_coordinate: ", goal_xy)
+                    print("goal xy_coordinate: ", goal_xy)                    
+                    csv.print('goal_relative', goal_xy)
                     # print(goal_xy[0])
 
                     cansat_to_goal_y_sq = (goal_xy[1])**2
                     cansat_to_goal_x_sq = (goal_xy[0])**2
                     distance = np.sqrt(cansat_to_goal_x_sq + cansat_to_goal_y_sq)
+                    csv.print('goal_distance', distance)
 
                     #3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
                     #やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
@@ -290,6 +319,7 @@ def main():
                     #4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
                     cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
                     cansat_to_goal_angle_degree = math.degrees(cansat_to_goal_angle) + 180
+                    csv.print('goal_relative_angle_rad', cansat_to_goal_angle)
                     
                     #5.機体の正面とゴールの向きの関係から、右に曲がるか、左に曲がるか、正面に進むか判断する
                     print("cansat to goal angle [degree]: ", cansat_to_goal_angle_degree)
@@ -324,6 +354,7 @@ def main():
 
                 except Exception as e:
                     print(f"An error occured in calculating goal_xy")
+                    csv.print('error', f"An error occured in calculating goal_xy")
 
 
                 # ゴールとの距離が5m(10m?)で近距離フェーズに移行
@@ -334,14 +365,17 @@ def main():
                         
                         motor.brake(motor_right, motor_left)
                         print("Go to short phase")
+                        csv.print('msg', "Go to short phase")
 
                     else:
                         pass
                 except Exception as e:
                     print(f"An error occured in judging transition to short phase, {e}")
+                    csv.print('error', f"An error occured in judging transition to short phase, {e}")
 
             except Exception as e:
                 print(f"An error occured in long phase: {e}")
+                csv.print('error', f"An error occured in long phase: {e}")
 
 
         # ゴールとのdistanceが5m 以下になったら近距離フェーズに移行
@@ -429,11 +463,13 @@ def main():
                             pass
                     except Exception as e:
                         print(f"An error occured in judging goal... (;_;): {e}")
+                        csv.print('error', f"An error occured in judging goal...: {e}")
 
 
 
             except Exception as e:
                 print(f"An error occured in short phase: {e}")
+                csv.print('error', f"An error occured in short phase: {e}")
 
 
 
