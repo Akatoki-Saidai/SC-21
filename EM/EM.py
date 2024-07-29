@@ -104,6 +104,7 @@ def main():
     try:
         baseline = bmp.get_baseline()
         print("baseline: ", baseline)
+        first_altitude = bmp.get_altitude()
 
     except Exception as e:
         print(f"An error occured in getting bmp data: {e}")
@@ -130,9 +131,7 @@ def main():
         # ************************************************** #
         
         if (phase == 0):
-            try:
-                # ここにコードを記述(担当：菅原)
-                
+            try:                
                 # bmp280で高度(altitude)を計測
                 try:
                     # temperature = bmp.get_temperature()
@@ -152,7 +151,7 @@ def main():
 
             # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
             # 条件式を記述し，フェーズ移行
-            if (altitude - baseline > 10):
+            if (altitude - first_altitude > 10):
                 phase = 1
                 print("Go to falling phase")
 
@@ -169,8 +168,6 @@ def main():
         elif (phase == 1):
 
             try:
-                # ここにコードを記述(担当：)
-
                 # bmpの高度(altitude)取得
                 try:
                     # temperature = bmp.get_temperature()
