@@ -3,6 +3,7 @@
 
 import struct
 import time
+from statistics import median
 
 from i2cdevice import BitField, Device, Register, _int_to_bytes
 from i2cdevice.adapter import Adapter, LookupAdapter
@@ -190,14 +191,28 @@ class BMP280:
             self._bmp280.set("CTRL_MEAS", mode="forced")
             while self._bmp280.get("STATUS").measuring:
                 time.sleep(0.001)
+        
+        # 3回測定して中央値を求める
 
-        raw = self._bmp280.get("DATA")
+        temp = []
+        press = []
 
-        self.temperature = self.calibration.compensate_temperature(raw.temperature)
-        self.pressure = self.calibration.compensate_pressure(raw.pressure) / 100.0
+        for i in range(3):
+            raw = self._bmp280.get("DATA")
+
+            temp[i] = self.calibration.compensate_temperature(raw.temperature)
+            press[i] = self.calibration.compensate_pressure(raw.pressure) / 100.0
+        
+        self.temperature = median(temp)
+        self.pressure = median(press)
 
     def get_temp_pres(self):
         self.update_sensor()
+
+        # 異常値チェック
+        if not(-20<self.temperature<50 and 900<self.pressure<1100):
+            raise ValueError(f'The BMP measurement value is invalid. temp: {self.temperature}, press: {self.pressure}')
+        
         csv.print('temp', self.temperature)
         csv.print('press', self.pressure)
         return self.temperature, self.pressure
@@ -206,10 +221,8 @@ class BMP280:
         # qnh = pressure at sea level where the readings are being taken.
         # The temperature should be the outdoor temperature.
         # Use the manual_temperature variable if temperature adjustments are required.
-        _, pressure = self.get_temp_pres()
-        if manual_temperature is None:
-            temperature, _ = self.get_temp_pres()
-        else:
+        temperature, pressure = self.get_temp_pres()
+        if manual_temperature is not None:
             temperature = manual_temperature
         altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
         csv.print('alt', altitude)
