@@ -262,9 +262,9 @@ def main():
                     print(f"An error occured in getting data from serial 0: {e}")
                     csv.print('error', f"An error occured in getting data from serial 0: {e}")
 
-
-                # GPSの緯度経度取得
+                # GPS緯度経度読み取り
                 try:
+
                     if len(sentence) > 0:
                         for x in sentence:
                             if 10 <= x <= 126:
@@ -272,10 +272,11 @@ def main():
                                     stat = gnss.update(chr(x))
                                 #print("stat:",stat,"x:",x,"chr:",chr(x))
                                 #print(chr(x))
+
                                 except Exception as e:
-                                    print(f"An error occured in updating GPS data: {e}")
-                                    csv.print('error', f"An error occured in updating GPS data: {e}")
-                                
+                                        print(f"An error occured in updating GPS data: {e}")
+                                        csv.print('error', f"An error occured in updating GPS data: {e}")
+
                                 if stat:
                                     try:
                                         tm = gnss.timestamp
@@ -285,9 +286,12 @@ def main():
                                         print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                         print("latitude:", gnss.latitude[0])
                                         print("longitude:", gnss.longitude[0])
+                                        csv.print('lat', gnss.latitude)
+                                        csv.print('lon', gnss.longitude)
+
                                     except Exception as e:
                                         print(f"An error occured in loading GPS data : {e}")
-                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
+                                        csv.print('error', f"An error occured in loading GPS data : {e}")
 
                 except Exception as e:
                     print(f"An error occured in reading GPS tm, lat,lon: {e}")
