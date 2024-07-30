@@ -7,14 +7,14 @@ import math
 import numpy as np
 
 # scに使用ライブラリほぼまとめました
-from sc import motor
-import sc.print_override as override
-from sc.camera import Camera
-from sc.bmp280 import BMP280
-from sc.bno055 import BNO055
-from sc.micropyGPS import MicropyGPS
-from sc import csv_print as csv
-from sc import calc_xy
+import motor
+import print_override as override
+from camera import Camera
+from bmp280 import BMP280
+from bno055 import BNO055
+from micropyGPS import MicropyGPS
+import csv_print as csv
+import calc_xy
 
 # mainゾーン
 
@@ -30,6 +30,11 @@ def main():
         csv.print('goal_lat', goal_latitude)
         goal_longtitude = 139.987548333
         csv.print('goal_lon', goal_longtitude)
+
+        # baselineとfirst_altitudeも先に定義
+        baseline = 1013.25
+        first_altitude = bmp.get_altitude()
+        
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
         csv.print('serious_error', f"An error occured in initialize phase and goal: {e}")
@@ -49,19 +54,25 @@ def main():
 
     try:
         #BNOの電源ピンをHighにする
-        v_bno = LED(9)
+        v_bno = LED(11)
         v_bno.on()
         #BNOのリセットピンをHighにする
         v_bno_reset = LED(24)
         v_bno_reset.on()
 
-        #BMEの電源ピンをHighにする
-        v_bme = LED(27)
+        #BMPの電源ピンをHighにする
+        v_bme = LED(22)
         v_bme.on()
+        
+        # wait
+        time.sleep(3)
 
-        #LEDつけてみる
-        LED_1 = LED(23)
+        #LEDもつけてみる
+        LED_1 = LED(27)
         LED_1.on()
+        LED_2 = LED(10)
+        LED_2.on()
+
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
         csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
@@ -69,10 +80,10 @@ def main():
 
     # モータードライバセットアップ
     try:
-        PIN_AIN1 = 18
+        PIN_AIN1 = 4
         PIN_AIN2 = 23
-        PIN_BIN1 = 24
-        PIN_BIN2 = 13
+        PIN_BIN1 = 13
+        PIN_BIN2 = 5
 
         motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
@@ -96,7 +107,7 @@ def main():
             print("Error initializing device")
             pass
         time.sleep(1)
-        bno.setExternalCrystalUse(True)
+        bno.setExternalCrystalUse(False)
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
         csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
