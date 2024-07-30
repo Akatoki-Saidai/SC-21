@@ -294,7 +294,7 @@ class BNO055:
 			buf = self.readBytes(vectorType, 6)
 			xyz = struct.unpack('hhh', struct.pack('BBBBBB', buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]))
 			x_data[i], y_data[i], z_data[i] = xyz[0], xyz[1], xyz[2]
-			time.sleep(0.0001)
+			# time.sleep(0.0001)
 
 		# 中央値を使用
 		xyz_m = [median(x_data), median(y_data), median(z_data)]
@@ -303,10 +303,14 @@ class BNO055:
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
 			result_vector = [i/scalingFactor for i in xyz_m]
+			if sum(abs(n) for n in result_vector) > 150:
+				raise(ValueError(f'BNO measurement is abnormal. mag: {result_vector}'))
 			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_GYROSCOPE:
 			scalingFactor = 900.0
 			result_vector = [i/scalingFactor for i in xyz_m]
+			if sum(abs(n) for n in result_vector) > 45:
+				raise(ValueError(f'BNO measurement is abnormal. gyro: {result_vector}'))
 			csv.print('gyro', result_vector)
 		elif vectorType == BNO055.VECTOR_EULER:
 			scalingFactor = 16.0
@@ -315,18 +319,24 @@ class BNO055:
 		elif vectorType == BNO055.VECTOR_GRAVITY:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz_m]
+			if sum(abs(n) for n in result_vector) > 15:
+				raise(ValueError(f'BNO measurement is abnormal. gyro: {result_vector}'))
 			csv.print('grav', result_vector)
 		elif vectorType == BNO055.VECTOR_LINEARACCEL:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz_m]
+			if sum(abs(n) for n in result_vector) > 25:
+				raise(ValueError(f'BNO measurement is abnormal. gyro: {result_vector}'))
 			csv.print('accel_line', result_vector)
 		elif vectorType == BNO055.VECTOR_ACCELEROMETER:
 			scalingFactor = 100.0
 			result_vector = [i/scalingFactor for i in xyz_m]
+			if sum(abs(n) for n in result_vector) > 50:
+				raise(ValueError(f'BNO measurement is abnormal. gyro: {result_vector}'))
 			csv.print('accel_all', result_vector)
 		else:
 			scalingFactor = 1.0
-		time.sleep(0.1)
+		# time.sleep(0.1)
 		return tuple(result_vector)
 
 	def getQuat(self):
