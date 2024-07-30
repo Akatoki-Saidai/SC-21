@@ -479,138 +479,138 @@ def main():
 
 
 
-        #////////////////////////////////////////////////////////////////////
-        # 以下記述コード(各フェーズ内のtryに適切なものをコピペしてください)
+    #     #////////////////////////////////////////////////////////////////////
+    #     # 以下記述コード(各フェーズ内のtryに適切なものをコピペしてください)
 
 
-        # "モーター"を使うコード
-        # これらを使ってゴールの向きに回転し，ゴールへ前進する
-        # モーターの動き部分の二行とtry，exceptをコピペ
-        try:
-            # モーターを回転して前進
-            motor.accel(motor_right, motor_left)
-            print("motor: forward -1s")
-            time.sleep(1)  # 何秒進むか
+    #     # "モーター"を使うコード
+    #     # これらを使ってゴールの向きに回転し，ゴールへ前進する
+    #     # モーターの動き部分の二行とtry，exceptをコピペ
+    #     try:
+    #         # モーターを回転して前進
+    #         motor.accel(motor_right, motor_left)
+    #         print("motor: forward -1s")
+    #         time.sleep(1)  # 何秒進むか
 
-            # モーターの回転を停止
-            motor.brake(motor_right, motor_left)
-            print("motor: brake")
-            time.sleep(1)  # 何秒進むか
+    #         # モーターの回転を停止
+    #         motor.brake(motor_right, motor_left)
+    #         print("motor: brake")
+    #         time.sleep(1)  # 何秒進むか
 
-            # モーターを回転させ，CanSatを1秒くらい右に曲がるように回転
-            motor.rightturn(motor_right, motor_left)
-            print("motor: rightturn")
+    #         # モーターを回転させ，CanSatを1秒くらい右に曲がるように回転
+    #         motor.rightturn(motor_right, motor_left)
+    #         print("motor: rightturn")
 
-            # モーターを回転させ，CanSatを1秒くらい左に曲がるように回転
-            motor.leftturn(motor_right, motor_left)
-            print("motor: leftturn")
-
-
-
-            time.sleep(1)
-
-        except Exception as e:
-            print(f"An error occured in moving motor: {e}")
-            # モーターを強制停止
-            motor_left.value = 0.0
-            motor_right.value = 0.0
+    #         # モーターを回転させ，CanSatを1秒くらい左に曲がるように回転
+    #         motor.leftturn(motor_right, motor_left)
+    #         print("motor: leftturn")
 
 
 
-        # "GPS"を使うコード
-        # GPSを使う際は以下のコードを使用する
-        # GPSデータを取得し，今いるlatitude, longtitudeを取得できる
+    #         time.sleep(1)
 
-        # UART(GPS)受信データ取得
-        try:
-            sentence = uart.readline()
+    #     except Exception as e:
+    #         print(f"An error occured in moving motor: {e}")
+    #         # モーターを強制停止
+    #         motor_left.value = 0.0
+    #         motor_right.value = 0.0
+
+
+
+    #     # "GPS"を使うコード
+    #     # GPSを使う際は以下のコードを使用する
+    #     # GPSデータを取得し，今いるlatitude, longtitudeを取得できる
+
+    #     # UART(GPS)受信データ取得
+    #     try:
+    #         sentence = uart.readline()
             
-        except Exception as e:
-                print(f"An error occured in getting data from serial 0: {e}")
+    #     except Exception as e:
+    #             print(f"An error occured in getting data from serial 0: {e}")
 
 
-        # GPS緯度経度読み取り
-        try:
-            if len(sentence) > 0:
-                for x in sentence:
-                    if 10 <= x <= 126:
-                        try:
-                            stat = gnss.update(chr(x))
-                        #print("stat:",stat,"x:",x,"chr:",chr(x))
-                        #print(chr(x))
-                        except Exception as e:
-                                print(f"An error occured in updating GPS data: {e}")
+    #     # GPS緯度経度読み取り
+    #     try:
+    #         if len(sentence) > 0:
+    #             for x in sentence:
+    #                 if 10 <= x <= 126:
+    #                     try:
+    #                         stat = gnss.update(chr(x))
+    #                     #print("stat:",stat,"x:",x,"chr:",chr(x))
+    #                     #print(chr(x))
+    #                     except Exception as e:
+    #                             print(f"An error occured in updating GPS data: {e}")
                         
-                        if stat:
-                            try:
-                                tm = gnss.timestamp
-                                # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-                                latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
-                                # print('=' * 20)
-                                print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
-                                print("latitude:", gnss.latitude[0])
-                                print("longitude:", gnss.longitude[0])
-                            except Exception as e:
-                                    print(f"An error occured in loading GPS data : {e}")
+    #                     if stat:
+    #                         try:
+    #                             tm = gnss.timestamp
+    #                             # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
+    #                             latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+    #                             # print('=' * 20)
+    #                             print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
+    #                             print("latitude:", gnss.latitude[0])
+    #                             print("longitude:", gnss.longitude[0])
+    #                         except Exception as e:
+    #                                 print(f"An error occured in loading GPS data : {e}")
 
-        except Exception as e:
-            print(f"An error occured in reading GPS tm, lat,lon: {e}")
+    #     except Exception as e:
+    #         print(f"An error occured in reading GPS tm, lat,lon: {e}")
 
 
-        # "BNO055(9軸)"を使うコード
-        # 地磁気Mag，ジャイロGyro，重力加速度を除く加速度Accel，除かない加速度Accel＿あｌｌ)を取得できる"
-        # bno055データ取得
-        try:
-            Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-            Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-            Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-            Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-            print("Gyro: ", Gyro)
-            print("Mag: ", Mag)
-            print("Accel", Accel)
-            print("Accel_all", Accel_all)
-        except Exception as e:
-            print(f"An error occured in reading bno055: {e}")
+    #     # "BNO055(9軸)"を使うコード
+    #     # 地磁気Mag，ジャイロGyro，重力加速度を除く加速度Accel，除かない加速度Accel＿あｌｌ)を取得できる"
+    #     # bno055データ取得
+    #     try:
+    #         Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+    #         Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+    #         Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+    #         Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+    #         print("Gyro: ", Gyro)
+    #         print("Mag: ", Mag)
+    #         print("Accel", Accel)
+    #         print("Accel_all", Accel_all)
+    #     except Exception as e:
+    #         print(f"An error occured in reading bno055: {e}")
     
 
 
-        # "BMP280(温度，気圧センサ)"を使うコード
-        # 温度temperture，気圧pressure，相対高度altitudeを取得するコード
-        # bmp280データ取得(基準高度参照)
-        try:
-            temperature = bmp.get_temperature()
-            pressure = bmp.get_pressure()
-            altitude = bmp.get_altitude(qnh=baseline)
-            print(f"temperture{temperature:05.2f}*C")
-            print(f"pressure: {pressure:05.2f}hPa")
-            print(f"Relative altitude: {altitude:05.2f} metres")
-        except Exception as e:
-            print(f"An error occured in reading bmp: {e}")
+    #     # "BMP280(温度，気圧センサ)"を使うコード
+    #     # 温度temperture，気圧pressure，相対高度altitudeを取得するコード
+    #     # bmp280データ取得(基準高度参照)
+    #     try:
+    #         temperature = bmp.get_temperature()
+    #         pressure = bmp.get_pressure()
+    #         altitude = bmp.get_altitude(qnh=baseline)
+    #         print(f"temperture{temperature:05.2f}*C")
+    #         print(f"pressure: {pressure:05.2f}hPa")
+    #         print(f"Relative altitude: {altitude:05.2f} metres")
+    #     except Exception as e:
+    #         print(f"An error occured in reading bmp: {e}")
 
 
-        # "カメラ"を使うコード
-        # カメラデータ取得&処理
-        try:
-            # フレームを取得
-            if (CameraStart == False):
-                picam2.start()
-                CameraStart = True
-            if (CameraStart == True):
-                frame = picam2.capture_array()
-                # 赤色を検出
-                mask = cam.red_detect(frame)
-                # 赤色検知の結果を取得
-                # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール，
-                camera_order = cam.analyze_red(frame, mask)
-                # 結果表示
-                time.sleep(0.5)
-                #print(len(contours))
+    #     # "カメラ"を使うコード
+    #     # カメラデータ取得&処理
+    #     try:
+    #         # フレームを取得
+    #         if (CameraStart == False):
+    #             picam2.start()
+    #             CameraStart = True
+    #         if (CameraStart == True):
+    #             frame = picam2.capture_array()
+    #             # 赤色を検出
+    #             mask = cam.red_detect(frame)
+    #             # 赤色検知の結果を取得
+    #             # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール，
+    #             camera_order = cam.analyze_red(frame, mask)
+    #             # 結果表示
+    #             time.sleep(0.5)
+    #             #print(len(contours))
 
-        except Exception as e:
-            print(f"An error occured in processing camera: {e}")
+    #     except Exception as e:
+    #         print(f"An error occured in processing camera: {e}")
 
-    # csvwrite.write()
-    # csvの書き込みは準備中
+    # # csvwrite.write()
+    # # csvの書き込みは準備中
 
 
 
