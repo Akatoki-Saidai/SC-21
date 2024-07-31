@@ -18,6 +18,8 @@ import calc_xy
 
 # mainゾーン
 
+DEBUG = True
+
 def main():
     
     # ---セットアップゾーン---
@@ -281,12 +283,14 @@ def main():
                     sentence_list = sentence_all.split('\n')
 
                     for sentence in sentence_list[-11:-2]:
+                        if DEBUG:
+                            csv.print('nmea', sentence)
                         for x in sentence:
                             if 10 <= x <= 126:
                                 try:
                                     stat = gnss.update(chr(x))
-                                #print("stat:",stat,"x:",x,"chr:",chr(x))
-                                #print(chr(x))
+                                    #print("stat:",stat,"x:",x,"chr:",chr(x))
+                                    #print(chr(x))
                                 except Exception as e:
                                     print(f"An error occured in updating GPS data: {e}")
                                     csv.print('error', f"An error occured in updating GPS data: {e}")
@@ -295,11 +299,11 @@ def main():
                                     if stat:
                                         tm = gnss.timestamp
                                         # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-                                        latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+                                        latitusde, longtitude = gnss.latitude[0], gnss.longitude[0]
                                         # print('=' * 20)
                                         print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
-                                        print("latitude:", gnss.latitude[0])
-                                        print("longitude:", gnss.longitude[0])
+                                        print("latitude:", latitude)
+                                        print("longitude:", longtitude)
                                 except Exception as e:
                                     print(f"An error occured in loading GPS data : {e}")
                                     csv.print('errro', f"An error occured in loading GPS data : {e}")
