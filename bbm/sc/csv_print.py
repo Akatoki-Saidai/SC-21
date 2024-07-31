@@ -38,10 +38,13 @@ def print(msg_type : str, msg_data):
 
         output_dict['monotonic'] = '"' + str(time.monotonic_ns()) + '"'
         if DEBUG:
-            frame = inspect.currentframe().f_back
-            output_dict['file'] = '"' + str(frame.f_code.co_filename) + '"'
-            output_dict['func'] = '"' + str(frame.f_code.co_name) + '"'
-            output_dict['line'] = '"' + str(frame.f_lineno) + '"'
+            try:
+                frame = inspect.currentframe().f_back
+                output_dict['file'] = '"' + str(frame.f_code.co_filename) + '"'
+                output_dict['func'] = '"' + str(frame.f_code.co_name) + '"'
+                output_dict['line'] = '"' + str(frame.f_lineno) + '"'
+            except Exception as e:
+                print(f"An error occured in inspecting fileinfo: {e}")
 
         output_msg = ','.join(output_dict.values())
         # print(output_msg)
