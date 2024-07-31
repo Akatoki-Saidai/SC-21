@@ -24,16 +24,16 @@ def main():
     
     # フェーズ，ゴール設定
     try:
-        phase = 0
+        phase = 2
         csv.print('phase', phase)
-        goal_latitude = 40.142621667
+        goal_latitude = 35.861493333333335
         csv.print('goal_lat', goal_latitude)
-        goal_longtitude = 139.987548333
+        goal_longtitude = 139.60592433333332
         csv.print('goal_lon', goal_longtitude)
-
-        # baselineとfirst_altitudeも先に定義
+        
+        # baselineも先に定義
         baseline = 1013.25
-        first_altitude = bmp.get_altitude()
+        first_altitude = 0
         
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
@@ -72,6 +72,7 @@ def main():
         LED_1.on()
         LED_2 = LED(10)
         LED_2.on()
+
 
     except Exception as e:
         print(f"An error occured in turn on bmp, bno, led: {e}")
@@ -257,14 +258,17 @@ def main():
                 # UART(GPS)受信データ取得
                 try:
                     sentence = uart.readline()
+                    print("GPS data received")
+                    while uart.in_waiting > 0:
+                        sentence = uart.readline()
+                        print("receiving...")
 
                 except Exception as e:
                     print(f"An error occured in getting data from serial 0: {e}")
                     csv.print('error', f"An error occured in getting data from serial 0: {e}")
 
-                # GPS緯度経度読み取り
+                # GPSの緯度経度取得
                 try:
-
                     if len(sentence) > 0:
                         for x in sentence:
                             if 10 <= x <= 126:
@@ -272,11 +276,10 @@ def main():
                                     stat = gnss.update(chr(x))
                                 #print("stat:",stat,"x:",x,"chr:",chr(x))
                                 #print(chr(x))
-
                                 except Exception as e:
-                                        print(f"An error occured in updating GPS data: {e}")
-                                        csv.print('error', f"An error occured in updating GPS data: {e}")
-
+                                    print(f"An error occured in updating GPS data: {e}")
+                                    csv.print('error', f"An error occured in updating GPS data: {e}")
+                                
                                 if stat:
                                     try:
                                         tm = gnss.timestamp
@@ -286,12 +289,9 @@ def main():
                                         print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                         print("latitude:", gnss.latitude[0])
                                         print("longitude:", gnss.longitude[0])
-                                        csv.print('lat', gnss.latitude)
-                                        csv.print('lon', gnss.longitude)
-
                                     except Exception as e:
                                         print(f"An error occured in loading GPS data : {e}")
-                                        csv.print('error', f"An error occured in loading GPS data : {e}")
+                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
 
                 except Exception as e:
                     print(f"An error occured in reading GPS tm, lat,lon: {e}")
@@ -332,8 +332,8 @@ def main():
                     #3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
                     #やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
                     #North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
-                    North_angle_rad = np.arctan2(Mag[1],Mag[0])
-                    cansat_to_goal = calc_xy.Rotation_clockwise_xy(goal_xy,North_angle_rad - math.pi)
+                    North_angle_rad = np.arctan2(-1 * Mag[1],Mag[0])
+                    cansat_to_goal = calc_xy.Rotation_clockwise_xy(goal_xy,North_angle_rad)
                     
                     #4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
                     cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
