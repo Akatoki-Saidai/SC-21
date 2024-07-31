@@ -96,6 +96,14 @@ def main():
     try:
         bus = SMBus(1)
         bmp = BMP280(i2c_dev=bus)
+
+        # 初めは異常値が出てくるので，空測定
+        for i in range(10):
+            try:
+                bmp.get_temp_pres()
+            except Exception as e:
+                print(f"An error occurred during empty measurement in BMP: {e}")
+                csv.print('msg', f"An error occurred during empty measurement in BMP: {e}")        
     except Exception as e:
         print(f"An error occured in setting bmp280 object: {e}")
         csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
