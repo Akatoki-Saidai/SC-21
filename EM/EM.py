@@ -53,6 +53,12 @@ def main():
 
 
     try:
+        #LEDもつけてみる
+        led_green = LED(10)
+        led_green.off()
+        led_red = LED(27)
+        led_red.on()
+
         #BNOの電源ピンをHighにする
         v_bno = LED(11)
         v_bno.on()
@@ -66,12 +72,6 @@ def main():
         
         # wait
         time.sleep(3)
-
-        #LEDもつけてみる
-        LED_1 = LED(27)
-        LED_1.on()
-        LED_2 = LED(10)
-        LED_2.on()
 
 
     except Exception as e:
@@ -159,7 +159,11 @@ def main():
         # ************************************************** #
         
         if (phase == 0):
-            try:                
+
+            try:
+                led_red.on()
+                led_green.off()
+
                 # bmp280で高度(altitude)を計測
                 try:
                     # temperature = bmp.get_temperature()
@@ -197,6 +201,9 @@ def main():
         elif (phase == 1):
 
             try:
+                led_red.on()
+                led_green.off()
+                
                 # bmpの高度(altitude)取得
                 try:
                     # temperature = bmp.get_temperature()
@@ -263,6 +270,9 @@ def main():
         elif (phase == 2):
 
             try:
+                led_red.off()
+                led_green.on()
+                
                 # UART(GPS)受信データ，GPSの緯度経度取得
                 try:
                     sentence_all = uart.read(uart.in_waiting)
@@ -407,6 +417,8 @@ def main():
         elif (phase == 3):
 
             try:
+                led_red.on()
+                led_green.on()
 
                 ## カメラを起動
                 if (CameraStart == False):
@@ -475,9 +487,30 @@ def main():
                     try:
                         if (camera_order == 4):
                             phase = 4
+                            csv.print('phase', phase)
                             # ゴール判定
                             print("Goal Goal Goal")
-                            break
+                            csv.print('msg', 'Goal')
+                
+                            while True:
+                                try:
+                                    led_red.on()
+                                    led_green.on()
+                                    time.sleep(0.5)
+                                    led_red.off()
+                                    led_green.off()
+                                    time.sleep(0.5)
+                                    bmp.get_altitude()
+                                    bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                                    bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                                    bno.getVector(BNO055.VECTOR_EULER)
+                                    bno.getVector(BNO055.VECTOR_GRAVITY)
+                                    bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                                    bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                                except Exception as e:
+                                    print(f"An error occured in goal: {e}")
+                                    csv.print('error', f"An error occured in goal: {e}")
+
                         
                         else:
                             pass
