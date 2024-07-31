@@ -188,7 +188,6 @@ def main():
 
 
 
-
         # 高度がある程度(本番は50m，あとで調整するので暫定でお願い)高くなったら落下フェーズに移行
         
         # ************************************************** #
@@ -229,10 +228,22 @@ def main():
                 # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
                 # 条件式を記述し，フェーズ移行
                 #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-                if altitude - first_altitude < 3 and sum(abs(Accel)) < 1.5 and sum(abs(Gyro)) < 1.0:
+                if altitude - first_altitude < 3 and sum(abs(Accel)) < 0.2 and sum(abs(Gyro)) < 0.02:
                     time.sleep(0.5)
                     Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                    if sum(abs(Accel)) < 1.5 and sum(abs(Gyro)) < 1.0:  # 0.5s後にもう一度判定
+                    if sum(abs(Accel)) < 0.2 and sum(abs(Gyro)) < 0.02:  # 0.5s後にもう一度判定
+                        
+                        # パラ分離用抵抗起動    
+                        NiCr_PIN = LED(17)
+                        NiCr_PIN.on()
+                        print("NiCr wire turn on")
+                        csv.print('msg', "NiCr wire turn on")
+                        time.sleep(15)
+
+                        NiCr_PIN.off()
+                        print("NiCr wire turn off. Parachute separated")
+                        csv.print('msg', "NiCr wire turn off. Parachute separated")
+
                         phase = 2
                         print("Go to long phase")
                         csv.print('msg', "Go to long phase")
@@ -243,9 +254,6 @@ def main():
             except Exception as e:
                 print(f"An error occured in falling phase: {e}")
                 csv.print('error', f"An error occured in falling phase: {e}")
-            
-        # z方向の加速度が0，altitudeがbaselineから±3になったら落下フェーズに移行
-            
 
 
         # ************************************************** #
@@ -255,21 +263,14 @@ def main():
         elif (phase == 2):
 
             try:
-                # UART(GPS)受信データ取得
+                # UART(GPS)受信データ，GPSの緯度経度取得
                 try:
-                    sentence = uart.readline()
+                    sentence_all = uart.read(uart.in_waiting)
                     print("GPS data received")
-                    while uart.in_waiting > 0:
-                        sentence = uart.readline()
-                        print("receiving...")
+                    
+                    sentence_list = sentence_all.split('\n')
 
-                except Exception as e:
-                    print(f"An error occured in getting data from serial 0: {e}")
-                    csv.print('error', f"An error occured in getting data from serial 0: {e}")
-
-                # GPSの緯度経度取得
-                try:
-                    if len(sentence) > 0:
+                    for sentence in sentence_list[-11:-2]:
                         for x in sentence:
                             if 10 <= x <= 126:
                                 try:
@@ -280,8 +281,8 @@ def main():
                                     print(f"An error occured in updating GPS data: {e}")
                                     csv.print('error', f"An error occured in updating GPS data: {e}")
                                 
-                                if stat:
-                                    try:
+                                try:
+                                    if stat:
                                         tm = gnss.timestamp
                                         # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
                                         latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
@@ -289,10 +290,10 @@ def main():
                                         print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                         print("latitude:", gnss.latitude[0])
                                         print("longitude:", gnss.longitude[0])
-                                    except Exception as e:
-                                        print(f"An error occured in loading GPS data : {e}")
-                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
-
+                                except Exception as e:
+                                    print(f"An error occured in loading GPS data : {e}")
+                                    csv.print('errro', f"An error occured in loading GPS data : {e}")
+                                
                 except Exception as e:
                     print(f"An error occured in reading GPS tm, lat,lon: {e}")
                     csv.print('error', f"An error occured in reading GPS tm, lat,lon: {e}")

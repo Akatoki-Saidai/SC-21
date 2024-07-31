@@ -86,10 +86,10 @@ def Rotation_clockwise_xy(vec_xy,radian):
 
 #--------------------Test code-----------------------------
 #Test用に緯度経度を手動で入れれるようにしています。(EMにはいらないコード)
-goal = (35.86513476045121, 139.6074040979085)
+goal = (35.86469513698247,139.60733251085654)
 goal_latitude = goal[0]
 goal_longtitude = goal[1]
-cansat = (35.86505976922859, 139.60741482674408)
+cansat = (35.86472991568935, 139.60730300655817)
 latitude = cansat[0]
 longtitude = cansat[1]
 Mag = (0.000000,1.000000)
@@ -159,7 +159,7 @@ distance = np.sqrt(cansat_to_goal_x_sq + cansat_to_goal_y_sq)
 #3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
 #やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
 #North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
-North_angle_rad = np.arctan2(Mag[1],Mag[0])
+North_angle_rad = np.arctan2(-1 * Mag[1],Mag[0])
 cansat_to_goal = Rotation_clockwise_xy(goal_xy,North_angle_rad - math.pi)
 #4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
 cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
