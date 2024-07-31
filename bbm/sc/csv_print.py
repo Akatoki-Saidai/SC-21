@@ -7,7 +7,7 @@ import time
 try:
     DEBUG = True
 
-    msg_types = ['monotonic', 'file', 'func', 'line', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'alt_base_press', 'goal_lat', 'goal_lon', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_relative_x', 'goal_relative_y', 'goal_relative_angle_rad', 'goal_distance', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z', 'euler_x', 'euler_y', 'euler_z', 'nmea']
+    msg_types = ['time', 'file', 'func', 'line', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'alt_base_press', 'goal_lat', 'goal_lon', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_relative_x', 'goal_relative_y', 'goal_relative_angle_rad', 'goal_distance', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z', 'euler_x', 'euler_y', 'euler_z', 'nmea']
     DEFAULT_DICT = {x : '' for x in msg_types}
 
     filename = 'csv_log_test.txt'
@@ -36,7 +36,7 @@ def print(msg_type : str, msg_data):
         else:
             output_dict[msg_type] = '"' + str(msg_data).replace('"', '""') + '"'
 
-        output_dict['monotonic'] = '"' + str(time.monotonic_ns()) + '"'
+        output_dict['time'] = '"' + str(time.monotonic()) + '"'
         if DEBUG:
             try:
                 frame = inspect.currentframe().f_back
