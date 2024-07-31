@@ -27,6 +27,9 @@ def print(msg_type : str, msg_data):
         elif (msg_type == 'motor'):
             output_dict[msg_type + '_l'] = '"' + str(msg_data[0]).replace('"', '""') + '"'
             output_dict[msg_type + '_r'] = '"' + str(msg_data[1]).replace('"', '""') + '"'
+        elif msg_type == 'lat_lon':
+            output_dict['lat'] = '"' + str(msg_data[0]).replace('"', '""') + '"'
+            output_dict['lon'] = '"' + str(msg_data[1]).replace('"', '""') + '"'
         else:
             output_dict[msg_type] = '"' + str(msg_data).replace('"', '""') + '"'
         output_dict['monotonic'] = str(time.monotonic_ns())
