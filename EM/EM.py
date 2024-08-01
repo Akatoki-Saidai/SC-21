@@ -288,7 +288,7 @@ def main():
                 
                 # UART(GPS)受信データ，GPSの緯度経度取得
                 try:
-                    sentence_all = uart.read(uart.in_waiting)
+                    sentence_all = uart.read(uart.in_waiting).decode('utf-8')
                     print("GPS data received")
                     
                     sentence_list = sentence_all.split('\n')
@@ -297,9 +297,9 @@ def main():
                         if DEBUG:
                             csv.print('nmea', sentence)
                         for x in sentence:
-                            if 10 <= x <= 126:
+                            if 10 <= ord(x) <= 126:
                                 try:
-                                    stat = gnss.update(chr(x))
+                                    stat = gnss.update(x)
                                     #print("stat:",stat,"x:",x,"chr:",chr(x))
                                     #print(chr(x))
                                 except Exception as e:
@@ -398,8 +398,8 @@ def main():
                         time.sleep(1)  
 
                 except Exception as e:
-                    print(f"An error occured in calculating goal_xy")
-                    csv.print('error', f"An error occured in calculating goal_xy")
+                    print(f"An error occured in calculating goal_xy: {e}")
+                    csv.print('error', f"An error occured in calculating goal_xy: {e}")
 
 
                 # ゴールとの距離が5m(10m?)で近距離フェーズに移行
@@ -585,7 +585,7 @@ def main():
     #     # GPSを使う際は以下のコードを使用する
     #     # GPSデータを取得し，今いるlatitude, longtitudeを取得できる
 
-    #     # UART(GPS)受信データ取得
+    #     # UART(GPS)受信データ取得(旧版)
     #     try:
     #         sentence = uart.readline()
             
@@ -593,7 +593,7 @@ def main():
     #             print(f"An error occured in getting data from serial 0: {e}")
 
 
-    #     # GPS緯度経度読み取り
+    #     # GPS緯度経度読み取り(旧版)
     #     try:
     #         if len(sentence) > 0:
     #             for x in sentence:
