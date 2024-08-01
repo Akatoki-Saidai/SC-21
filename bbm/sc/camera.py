@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 
 
+# 測定値の出力用
+import csv_print as csv
+
 
 class Camera:
     def red_detect(self, frame):
@@ -41,9 +44,11 @@ class Camera:
             # #最大の領域の中心座標を取得する
             center_x = (rect[0] + rect[2] // 2)
             center_y = (rect[1] + rect[3] // 2)
+            csv.print('camera_center', [center_x, center_y])
 
             # 最大の領域の面積を取得する-
             area = cv2.contourArea(biggest_contour)
+            csv.print('camera_area', area)
 
             # 最大の領域の長方形を表示する
             cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 0, 255), 2)
@@ -58,27 +63,38 @@ class Camera:
 
 
             frame_center_x = frame.shape[1] // 2
+            csv.print('camera_frame_size_x', frame.shape[1])
+
             # 中心座標のx座標が画像の中心より大きいか小さいか判定
             if area > 12000:
                 print("Close enough to red")
+                csv.print('camera_order', 'close')
                 camera_order = 4
 
             elif area > 150:
                 if frame_center_x -  50 <= center_x <= frame_center_x + 50:
                     print("The red object is in the center")#直進
+                    csv.print('camera_order', 'center')
                     camera_order = 1
                 elif center_x > frame_center_x + 50:
                     print("The red object is in the right")#右へ
+                    csv.print('camera_order', 'right')
                     camera_order = 2
                 elif center_x < frame_center_x - 50:
                     print("The red object is in the left")#左へ
+                    csv.print('camera_order', 'left')
                     camera_order = 3
 
             else:
-                pass
+                print("The red object is too minimum")
+                csv.print('camera_order', 'not found')
 
             # red_result = cv2.drawContours(mask, [biggest_contour], -1, (0, 255, 0), 2)
         
+        else:
+            print("The red object is None")
+            csv.print('camera_order', 'none')
+            
         cv2.imshow("Frame", frame)
         # cv2.imshow("Mask", mask)
 
