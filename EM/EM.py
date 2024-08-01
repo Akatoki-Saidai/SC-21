@@ -245,17 +245,17 @@ def main():
                 # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
                 # 条件式を記述し，フェーズ移行
                 #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-                if altitude - first_altitude < 3 and sum(abs(Accel)) < 0.2 and sum(abs(Gyro)) < 0.02:
+                if altitude - first_altitude < 3 and sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
                     time.sleep(0.5)
                     Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                    if sum(abs(Accel)) < 0.2 and sum(abs(Gyro)) < 0.02:  # 0.5s後にもう一度判定
+                    if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
                         
                         # パラ分離用抵抗起動    
                         NiCr_PIN = LED(17)
                         NiCr_PIN.on()
                         print("NiCr wire turn on")
                         csv.print('msg', "NiCr wire turn on")
-                        time.sleep(15)
+                        time.sleep(10)
 
                         NiCr_PIN.off()
                         print("NiCr wire turn off. Parachute separated")
