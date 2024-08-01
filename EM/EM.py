@@ -26,11 +26,11 @@ def main():
     
     # フェーズ，ゴール設定
     try:
-        phase = 2
+        phase = 3
         csv.print('phase', phase)
-        goal_latitude = 35.861493333333335
+        goal_latitude = 35.8605938
         csv.print('goal_lat', goal_latitude)
-        goal_longtitude = 139.60592433333332
+        goal_longtitude = 139.606272
         csv.print('goal_lon', goal_longtitude)
         
         # baselineも先に定義
@@ -255,7 +255,7 @@ def main():
                     if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
                         
                         # パラ分離用抵抗起動
-                        NiCr_PIN.on()
+                        # NiCr_PIN.on()
                         print("NiCr wire turn on")
                         csv.print('msg', "NiCr wire turn on")
                         time.sleep(10)
@@ -373,7 +373,8 @@ def main():
                     if (cansat_to_goal_angle_degree < 30) or (330 < cansat_to_goal_angle_degree):
                         print("forward")
                         motor.accel(motor_right, motor_left)
-                        time.sleep(3)
+                        time.sleep(2)
+                        motor.brake(right_motor, left_motor)
 
                     if (30 < cansat_to_goal_angle_degree <=135):
                         print("right")
@@ -472,14 +473,14 @@ def main():
                         elif (camera_order == 2):
                             # モーターを回転させ，CanSatを1秒くらい左回転
                             motor.rightturn(motor_right, motor_left)
-                            print("motor: leftturn")
+                            print("motor: rightturn")
                             time.sleep(1)  # 1秒止まる
 
                         # 左にゴールがあるとき右に回転
                         elif (camera_order == 3):
                             # モーターを回転させ，CanSatを1秒くらい右回転
                             motor.leftturn(motor_right, motor_left)
-                            print("motor: rightturn")
+                            print("motor: leftturn")
                             time.sleep(1)  # 1秒止まる
 
                         # ゴールが見つからないとき右に回転
@@ -501,6 +502,10 @@ def main():
                         #ゴールについたらフェーズ4に移行
                     try:
                         if (camera_order == 4):
+                            motor.accel(motor_right, motor_left)
+                            time.sleep(1.2)
+                            motor.brake(motor_right, motor_left)
+                            
                             phase = 4
                             csv.print('phase', phase)
                             # ゴール判定
@@ -532,7 +537,6 @@ def main():
                     except Exception as e:
                         print(f"An error occured in judging goal... (;_;): {e}")
                         csv.print('error', f"An error occured in judging goal...: {e}")
-
 
 
             except Exception as e:
