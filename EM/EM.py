@@ -288,7 +288,7 @@ def main():
                 
                 # UART(GPS)受信データ，GPSの緯度経度取得
                 try:
-                    sentence_all = uart.read(uart.in_waiting)
+                    sentence_all = uart.read(uart.in_waiting).decode('utf-8')
                     print("GPS data received")
                     
                     sentence_list = sentence_all.split('\n')
@@ -297,9 +297,9 @@ def main():
                         if DEBUG:
                             csv.print('nmea', sentence)
                         for x in sentence:
-                            if 10 <= x <= 126:
+                            if 10 <= ord(x) <= 126:
                                 try:
-                                    stat = gnss.update(chr(x))
+                                    stat = gnss.update(x)
                                     #print("stat:",stat,"x:",x,"chr:",chr(x))
                                     #print(chr(x))
                                 except Exception as e:
