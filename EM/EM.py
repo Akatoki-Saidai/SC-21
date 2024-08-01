@@ -585,7 +585,7 @@ def main():
     #     # GPSを使う際は以下のコードを使用する
     #     # GPSデータを取得し，今いるlatitude, longtitudeを取得できる
 
-    #     # UART(GPS)受信データ取得
+    #     # UART(GPS)受信データ取得(旧版)
     #     try:
     #         sentence = uart.readline()
             
@@ -593,7 +593,7 @@ def main():
     #             print(f"An error occured in getting data from serial 0: {e}")
 
 
-    #     # GPS緯度経度読み取り
+    #     # GPS緯度経度読み取り(旧版)
     #     try:
     #         if len(sentence) > 0:
     #             for x in sentence:
