@@ -71,6 +71,10 @@ def main():
         #BMPの電源ピンをHighにする
         v_bme = LED(22)
         v_bme.on()
+
+        # 抵抗を明示的にLowにしておく
+        NiCr_PIN = LED(17)
+        NiCr_PIN.off()
         
         # wait
         time.sleep(3)
@@ -250,8 +254,7 @@ def main():
                     Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
                     if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
                         
-                        # パラ分離用抵抗起動    
-                        NiCr_PIN = LED(17)
+                        # パラ分離用抵抗起動
                         NiCr_PIN.on()
                         print("NiCr wire turn on")
                         csv.print('msg', "NiCr wire turn on")
