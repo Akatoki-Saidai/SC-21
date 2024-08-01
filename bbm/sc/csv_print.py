@@ -35,10 +35,6 @@ def print(msg_type : str, msg_data):
         elif msg_type == 'lat_lon':
             output_dict['lat'] = '"' + str(msg_data[0]).replace('"', '""') + '"'
             output_dict['lon'] = '"' + str(msg_data[1]).replace('"', '""') + '"'
-        elif (msg_type == 'error') or (msg_type == 'error'):
-            e_type, e_obj, e_trace = sys.exc_info()
-            f_exp = traceback.format_exception(e_type, e_obj, e_trace)
-            output_dict['format_exception'] = '"' + str(f_exp[0] + f_exp[1] + f_exp[2]).replace('"', '""') + '"'
         else:
             output_dict[msg_type] = '"' + str(msg_data).replace('"', '""') + '"'
 
@@ -51,6 +47,14 @@ def print(msg_type : str, msg_data):
                 output_dict['line'] = '"' + str(frame.f_lineno) + '"'
             except Exception as e:
                 print(f"An error occured in inspecting fileinfo: {e}")
+            
+            try:
+                e_type, e_obj, e_trace = sys.exc_info()
+                if e_obj is not None:
+                    f_exp = traceback.format_exception(e_type, e_obj, e_trace)
+                    output_dict['format_exception'] = '"' + str(f_exp[0] + f_exp[1] + f_exp[2]).replace('"', '""') + '"'
+            except Exception as e:
+                print(f"An error occured in inspecting error_info: {e}")
 
         output_msg = ','.join(output_dict.values())
         # print(output_msg)
