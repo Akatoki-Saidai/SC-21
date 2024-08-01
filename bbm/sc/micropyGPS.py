@@ -818,7 +818,7 @@ class MicropyGPS(object):
             else:  # Default date format
                 date_string = month + '/' + day + '/' + year
 
-        csv.print('time', f'{year}-{month}-{day}T{self.timestamp[0]}:{self.timestamp[1]}:{self.timestamp[2]}Z')  # 測定値を記録
+        csv.print('gnss_time', f'{century}{year}-{month}-{day}T{self.timestamp[0]}:{self.timestamp[1]}:{self.timestamp[2]}Z')  # 測定値を記録
         return date_string
 
     # All the currently supported NMEA sentences
