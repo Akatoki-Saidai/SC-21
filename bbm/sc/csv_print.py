@@ -2,12 +2,14 @@
 
 import copy
 import inspect
+import sys
 import time
+import traceback
 
 try:
     DEBUG = True
 
-    msg_types = ['time', 'file', 'func', 'line', 'serious_error', 'error', 'warning', 'msg', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'alt_base_press', 'goal_lat', 'goal_lon', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_relative_x', 'goal_relative_y', 'goal_relative_angle_rad', 'goal_distance', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z', 'euler_x', 'euler_y', 'euler_z', 'nmea']
+    msg_types = ['time', 'file', 'func', 'line', 'serious_error', 'error', 'warning', 'msg', 'format_exception', 'phase', 'time', 'date', 'lat', 'lon', 'alt', 'alt_base_press', 'goal_lat', 'goal_lon', 'temp', 'press', 'camera_area', 'camera_order', 'camera_center_x', 'camera_center_y', 'camera_frame_size_x', 'camera_frame_size_y', 'motor_l', 'motor_r', 'goal_relative_x', 'goal_relative_y', 'goal_relative_angle_rad', 'goal_distance', 'accel_all_x', 'accel_all_y', 'accel_all_z', 'accel_line_x', 'accel_line_y', 'accel_line_z', 'mag_x', 'mag_y', 'mag_z', 'gyro_x', 'gyro_y', 'gyro_z', 'grav_x', 'grav_y', 'grav_z', 'euler_x', 'euler_y', 'euler_z', 'nmea']
     DEFAULT_DICT = {x : '' for x in msg_types}
 
     filename = 'csv_log_test.txt'
@@ -33,6 +35,10 @@ def print(msg_type : str, msg_data):
         elif msg_type == 'lat_lon':
             output_dict['lat'] = '"' + str(msg_data[0]).replace('"', '""') + '"'
             output_dict['lon'] = '"' + str(msg_data[1]).replace('"', '""') + '"'
+        elif (msg_type == 'error') or (msg_type == 'error'):
+            e_type, e_obj, e_trace = sys.exc_info()
+            f_exp = traceback.format_exception(e_type, e_obj, e_trace)
+            output_dict['format_exception'] = '"' + str(f_exp[0] + f_exp[1] + f_exp[2]).replace('"', '""') + '"'
         else:
             output_dict[msg_type] = '"' + str(msg_data).replace('"', '""') + '"'
 
