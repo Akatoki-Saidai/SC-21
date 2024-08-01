@@ -398,8 +398,8 @@ def main():
                         time.sleep(1)  
 
                 except Exception as e:
-                    print(f"An error occured in calculating goal_xy")
-                    csv.print('error', f"An error occured in calculating goal_xy")
+                    print(f"An error occured in calculating goal_xy: {e}")
+                    csv.print('error', f"An error occured in calculating goal_xy: {e}")
 
 
                 # ゴールとの距離が5m(10m?)で近距離フェーズに移行
