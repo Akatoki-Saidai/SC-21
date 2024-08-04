@@ -23,10 +23,20 @@ DEBUG = True
 def main():
     
     # ---セットアップゾーン---
+
+    # LEDをセット
+    try:
+        led_green = LED(10)
+        led_green.off()
+        led_red = LED(27)
+        led_red.off()
+    except Exception as e:
+        print(f"An error occured in setting LED: {e}")
+        csv.print('error', f"An error occured in setting LED: {e}")
     
     # フェーズ，ゴール設定
     try:
-        phase = 3
+        phase = 0
         csv.print('phase', phase)
         goal_latitude = 35.8605938
         csv.print('goal_lat', goal_latitude)
@@ -40,11 +50,16 @@ def main():
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
         csv.print('serious_error', f"An error occured in initialize phase and goal: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
     # 少々ここらで(print関数を)オーバーライド
     # ※printしたものがログファイルにも行きます
-    override.printoverride()
-
+    try:
+        override.printoverride()
+    except Exception as e:
+        print(f"An error occured in overriding print: {e}")
+        csv.print('serious_error', f"An error occured in overriding print: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
     # UART(GPS)通信設定(Check pin)
     try:
@@ -52,15 +67,10 @@ def main():
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
         csv.print('serious_error', f"An error occured in setting serial 0: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
 
     try:
-        #LEDもつけてみる
-        led_green = LED(10)
-        led_green.off()
-        led_red = LED(27)
-        led_red.on()
-
         #BNOの電源ピンをHighにする
         v_bno = LED(11)
         v_bno.on()
@@ -81,8 +91,9 @@ def main():
 
 
     except Exception as e:
-        print(f"An error occured in turn on bmp, bno, led: {e}")
-        csv.print('error', f"An error occured in turn on bmp, bno, led: {e}")
+        print(f"An error occured in turn on bmp, bno: {e}")
+        csv.print('serious_error', f"An error occured in turn on bmp, bno: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
 
     # モータードライバセットアップ
@@ -97,6 +108,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting motor_driver: {e}")
         csv.print('serious_error', f"An error occured in setting motor_driver: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
 
     # gpsのセットアップ
@@ -105,6 +117,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting gps object: {e}")
         csv.print('serious_error', f"An error occured in setting gps object: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
 
     #bno055のセットアップ
@@ -118,6 +131,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
         csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
+        led_red.blink(0.5, 0.5, 10)
         
 
     #bmp280のセットアップ
@@ -135,6 +149,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting bmp object: {e}")
         csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
     # bmp280高度算出用基準気圧取得
     try:
@@ -147,6 +162,7 @@ def main():
     except Exception as e:
         print(f"An error occured in getting bmp data: {e}")
         csv.print('serious_error', f"An error occured in getting bmp280 data: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
     # カメラセットアップ
     try:
@@ -159,6 +175,7 @@ def main():
     except Exception as e:
         print(f"An error occurred in init camera: {e}")
         csv.print('serious_error', f"An error occurred in init camera: {e}")
+        led_red.blink(0.5, 0.5, 10)
 
 
 
@@ -175,8 +192,8 @@ def main():
         if (phase == 0):
 
             try:
-                led_red.on()
-                led_green.off()
+                led_green.on()
+                led_red.off()
 
                 # bmp280で高度(altitude)を計測
                 try:
@@ -215,8 +232,8 @@ def main():
         elif (phase == 1):
 
             try:
-                led_red.on()
-                led_green.off()
+                led_green.on()
+                led_red.off()
                 
                 # bmpの高度(altitude)取得
                 try:
@@ -253,6 +270,8 @@ def main():
                     time.sleep(0.5)
                     Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
                     if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
+                        led_green.blink(0.5, 0.5, 20)
+                        led_red.on()
                         
                         # パラ分離用抵抗起動
                         # NiCr_PIN.on()
@@ -267,7 +286,10 @@ def main():
                         phase = 2
                         print("Go to long phase")
                         csv.print('msg', "Go to long phase")
-
+                        led_green.off()
+                    
+                    else:
+                        csv.print('msg', 'The stationary condition double check did not pass. Try again.')
                 else:
                     pass
     
@@ -283,8 +305,8 @@ def main():
         elif (phase == 2):
 
             try:
-                led_red.off()
-                led_green.on()
+                led_green.off()
+                led_red.on()
                 
                 # UART(GPS)受信データ，GPSの緯度経度取得
                 try:
@@ -514,12 +536,8 @@ def main():
                 
                             while True:
                                 try:
-                                    led_red.on()
-                                    led_green.on()
-                                    time.sleep(0.5)
-                                    led_red.off()
-                                    led_green.off()
-                                    time.sleep(0.5)
+                                    led_green.blink(0.5, 0.5, 10)
+                                    led_red.blink(0.5, 0.5, 10)
                                     bmp.get_altitude()
                                     bno.getVector(BNO055.VECTOR_MAGNETOMETER)
                                     bno.getVector(BNO055.VECTOR_GYROSCOPE)
@@ -527,6 +545,9 @@ def main():
                                     bno.getVector(BNO055.VECTOR_GRAVITY)
                                     bno.getVector(BNO055.VECTOR_LINEARACCEL)
                                     bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                                    frame = picam2.capture_array()
+                                    mask = cam.red_detect(frame)
+                                    cam.analyze_red(frame, mask)
                                 except Exception as e:
                                     print(f"An error occured in goal: {e}")
                                     csv.print('error', f"An error occured in goal: {e}")
@@ -686,4 +707,8 @@ def main():
 # この.pyファイルがメイン関数の時のみ実行
 if __name__ == "__main__":
     while True:
-        main()
+        try:
+            main()
+        except Exception as e:
+            print(f'An error occured in main func: {e}')
+            csv.print('serious_error', 'An error occured in main func')
