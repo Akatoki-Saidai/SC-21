@@ -533,25 +533,6 @@ def main():
                             # ゴール判定
                             print("Goal Goal Goal")
                             csv.print('msg', 'Goal')
-                
-                            while True:
-                                try:
-                                    led_green.blink(0.5, 0.5, 10)
-                                    led_red.blink(0.5, 0.5, 10)
-                                    bmp.get_altitude()
-                                    bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-                                    bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                                    bno.getVector(BNO055.VECTOR_EULER)
-                                    bno.getVector(BNO055.VECTOR_GRAVITY)
-                                    bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                                    bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                                    frame = picam2.capture_array()
-                                    mask = cam.red_detect(frame)
-                                    cam.analyze_red(frame, mask)
-                                except Exception as e:
-                                    print(f"An error occured in goal: {e}")
-                                    csv.print('error', f"An error occured in goal: {e}")
-
                         
                         else:
                             pass
@@ -563,6 +544,36 @@ def main():
             except Exception as e:
                 print(f"An error occured in short phase: {e}")
                 csv.print('error', f"An error occured in short phase: {e}")
+        
+
+        # カメラで取得した画像内の赤色が大きかったらゴールフェーズに移行
+
+        # ************************************************** #
+        #            ゴールフェーズ(phase = 4)               #
+        # ************************************************** #
+
+        elif phase == 4:
+            try:
+                led_green.blink(0.5, 0.5, 10)
+                led_red.blink(0.5, 0.5, 10)
+                motor_left.value = 0.0
+                motor_right.value = 0.0
+
+                # 待っている間にいろいろデータを取得
+                bmp.get_altitude()
+                bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                bno.getVector(BNO055.VECTOR_EULER)
+                bno.getVector(BNO055.VECTOR_GRAVITY)
+                bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                frame = picam2.capture_array()
+                mask = cam.red_detect(frame)
+                cam.analyze_red(frame, mask)
+            except Exception as e:
+                print(f"An error occured in goal phase: {e}")
+                csv.print('error', f"An error occured in goal phase: {e}")
+
 
 
 
