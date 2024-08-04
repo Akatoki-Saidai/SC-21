@@ -182,397 +182,401 @@ def main():
     # ---繰り返しゾーン---
 
     while True:
+        try:
 
-        csv.print('phase', phase)
+            csv.print('phase', phase)
 
-        # ************************************************** #
-        #             待機フェーズ(phase = 0)                #
-        # ************************************************** #
-        
-        if (phase == 0):
+            # ************************************************** #
+            #             待機フェーズ(phase = 0)                #
+            # ************************************************** #
+            
+            if (phase == 0):
 
-            try:
-                led_green.on()
-                led_red.off()
-
-                # bmp280で高度(altitude)を計測
                 try:
-                    # temperature = bmp.get_temperature()
-                    # pressure = bmp.get_pressure()
-                    altitude = bmp.get_altitude(qnh=baseline)
-                    # print(f"temperture{temperature:05.2f}*C")
-                    # print(f"pressure: {pressure:05.2f}hPa")
-                # 高度をprint
-                    print(f"Relative altitude: {altitude:05.2f} metres")
-                except Exception as e:
-                    print(f"An error occured in reading bmp: {e}")
-                    csv.print('error', f"An error occured in reading bmp: {e}")
+                    led_green.on()
+                    led_red.off()
 
-                # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
-                # 条件式を記述し，フェーズ移行
-                if (altitude - first_altitude > 10):
-                    phase = 1
-                    print("Go to falling phase")
-                    csv.print('msg', 'Go to falling phase')
-                else:
-                    pass
+                    # bmp280で高度(altitude)を計測
+                    try:
+                        # temperature = bmp.get_temperature()
+                        # pressure = bmp.get_pressure()
+                        altitude = bmp.get_altitude(qnh=baseline)
+                        # print(f"temperture{temperature:05.2f}*C")
+                        # print(f"pressure: {pressure:05.2f}hPa")
+                    # 高度をprint
+                        print(f"Relative altitude: {altitude:05.2f} metres")
+                    except Exception as e:
+                        print(f"An error occured in reading bmp: {e}")
+                        csv.print('error', f"An error occured in reading bmp: {e}")
 
-            except Exception as e:
-                print(f"An error occured in waiting phase: {e}")
-                csv.print('error', f"An error occured in waiting phase: {e}")
-
-
-
-        # 高度がある程度(本番は50m，あとで調整するので暫定でお願い)高くなったら落下フェーズに移行
-        
-        # ************************************************** #
-        #             落下フェーズ(phase = 1)                #
-        # ************************************************** #
-        
-        elif (phase == 1):
-
-            try:
-                led_green.on()
-                led_red.off()
-                
-                # bmpの高度(altitude)取得
-                try:
-                    # temperature = bmp.get_temperature()
-                    # pressure = bmp.get_pressure()
-                    altitude = bmp.get_altitude(qnh=baseline)
-                    # print(f"temperture{temperature:05.2f}*C")
-                    # print(f"pressure: {pressure:05.2f}hPa")
-                # 高度をprint
-                    print(f"Relative altitude: {altitude:05.2f} metres")
-                except Exception as e:
-                    print(f"An error occured in reading bmp: {e}")
-                    csv.print('error', f"An error occured in reading bmp: {e}")
-
-                # bnoの重力加速度を除いた加速度(Accel)を取得
-                try:
-                    Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                    # Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-                    Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                    # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                    print("Gyro: ", Gyro)
-                    # print("Mag: ", Mag)
-                # 加速度をprint
-                    print("Accel", Accel)
-                    # print("Accel_all", Accel_all)
-                except Exception as e:
-                    print(f"An error occured in reading bno055: {e}")
-                    csv.print('error', f"An error occured in reading bno055: {e}")
-
-                # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
-                # 条件式を記述し，フェーズ移行
-                #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-                if altitude - first_altitude < 3 and sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
-                    time.sleep(0.5)
-                    Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                    if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
-                        led_green.blink(0.5, 0.5, 20)
-                        led_red.on()
-                        
-                        # パラ分離用抵抗起動
-                        # NiCr_PIN.on()
-                        print("NiCr wire turn on")
-                        csv.print('msg', "NiCr wire turn on")
-                        time.sleep(10)
-
-                        NiCr_PIN.off()
-                        print("NiCr wire turn off. Parachute separated")
-                        csv.print('msg', "NiCr wire turn off. Parachute separated")
-
-                        phase = 2
-                        print("Go to long phase")
-                        csv.print('msg', "Go to long phase")
-                        led_green.off()
-                    
-                    else:
-                        csv.print('msg', 'The stationary condition double check did not pass. Try again.')
-                else:
-                    pass
-    
-            except Exception as e:
-                print(f"An error occured in falling phase: {e}")
-                csv.print('error', f"An error occured in falling phase: {e}")
-
-
-        # ************************************************** #
-        #            遠距離フェーズ(phase = 2)               #
-        # ************************************************** #
-        
-        elif (phase == 2):
-
-            try:
-                led_green.off()
-                led_red.on()
-                
-                # UART(GPS)受信データ，GPSの緯度経度取得
-                try:
-                    sentence_all = uart.read(uart.in_waiting).decode('utf-8')
-                    print("GPS data received")
-                    
-                    sentence_list = sentence_all.split('\n')
-
-                    for sentence in sentence_list[-11:-2]:
-                        if DEBUG:
-                            csv.print('nmea', sentence)
-                        for x in sentence:
-                            if 10 <= ord(x) <= 126:
-                                try:
-                                    stat = gnss.update(x)
-                                    #print("stat:",stat,"x:",x,"chr:",chr(x))
-                                    #print(chr(x))
-                                except Exception as e:
-                                    print(f"An error occured in updating GPS data: {e}")
-                                    csv.print('error', f"An error occured in updating GPS data: {e}")
-                                
-                                try:
-                                    if stat:
-                                        tm = gnss.timestamp
-                                        # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-                                        latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
-                                        # print('=' * 20)
-                                        print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
-                                        print("latitude:", latitude)
-                                        print("longitude:", longtitude)
-                                except Exception as e:
-                                    print(f"An error occured in loading GPS data : {e}")
-                                    csv.print('errro', f"An error occured in loading GPS data : {e}")
-                                
-                except Exception as e:
-                    print(f"An error occured in reading GPS tm, lat,lon: {e}")
-                    csv.print('error', f"An error occured in reading GPS tm, lat,lon: {e}")
-
-
-                # bno055地磁気Magを取得
-                try:
-                    # Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                    Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-                    # Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                    # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                    # print("Gyro: ", Gyro)
-                    print("Mag: ", Mag)
-                    # print("Accel", Accel)
-                    # print("Accel_all", Accel_all)
-                except Exception as e:
-                    print(f"An error occured in reading bno055: {e}")
-                    csv.print('error', f"An error occured in reading bno055: {e}")
-
-
-                # 計算過程はcalc_xyに定義
-                # ゴールの緯度経度はgoal_latitudeとgoal_longtitude(一番上でフェーズ初期化と一緒に定義)
-                try:
-                    #1.ゴールの緯度経度をCanSat中心のxy座標で表す。
-                    goal_xy = calc_xy.calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
-                    
-                    #2.緯度経度→→→ゴールと機体の距離を求める
-                    print("goal xy_coordinate: ", goal_xy)                    
-                    csv.print('goal_relative', goal_xy)
-                    # print(goal_xy[0])
-
-                    cansat_to_goal_y_sq = (goal_xy[1])**2
-                    cansat_to_goal_x_sq = (goal_xy[0])**2
-                    distance = np.sqrt(cansat_to_goal_x_sq + cansat_to_goal_y_sq)
-                    csv.print('goal_distance', distance)
-
-                    #3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
-                    #やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
-                    #North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
-                    North_angle_rad = np.arctan2(-1 * Mag[1],Mag[0])
-                    cansat_to_goal = calc_xy.Rotation_clockwise_xy(goal_xy,North_angle_rad)
-                    
-                    #4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
-                    cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
-                    cansat_to_goal_angle_degree = math.degrees(cansat_to_goal_angle) + 180
-                    csv.print('goal_relative_angle_rad', cansat_to_goal_angle)
-                    
-                    #5.機体の正面とゴールの向きの関係から、右に曲がるか、左に曲がるか、正面に進むか判断する
-                    print("cansat to goal angle [degree]: ", cansat_to_goal_angle_degree)
-                    print("cansat to goal distance [m]: ", distance)
-                    
-                    if (cansat_to_goal_angle_degree < 30) or (330 < cansat_to_goal_angle_degree):
-                        print("forward")
-                        motor.accel(motor_right, motor_left)
-                        time.sleep(2)
-                        motor.brake(right_motor, left_motor)
-
-                    if (30 < cansat_to_goal_angle_degree <=135):
-                        print("right")
-                        motor.rightturn(motor_right, motor_left)
-                        time.sleep(1)
-
-                    if (135 <= cansat_to_goal_angle_degree <= 180):
-                        print("sharp_right")
-                        motor.rightturn(motor_right, motor_left)
-                        motor.rightturn(motor_right, motor_left)
-                        time.sleep(1)
-
-                    if (225 < cansat_to_goal_angle_degree <= 330):
-                        print("left")
-                        motor.leftturn(motor_right, motor_left)
-                        time.sleep(1) 
-
-                    if (180 < cansat_to_goal_angle_degree < 225):
-                        print("sharp_left")
-                        motor.leftturn(motor_right, motor_left)
-                        motor.leftturn(motor_right, motor_left)
-                        time.sleep(1)  
-
-                except Exception as e:
-                    print(f"An error occured in calculating goal_xy: {e}")
-                    csv.print('error', f"An error occured in calculating goal_xy: {e}")
-
-
-                # ゴールとの距離が5m(10m?)で近距離フェーズに移行
-                # 条件式を記述し，フェーズ移行
-                try:
-                    if (distance <= 5):
-                        phase = 3
-                        
-                        motor.brake(motor_right, motor_left)
-                        print("Go to short phase")
-                        csv.print('msg', "Go to short phase")
-
+                    # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
+                    # 条件式を記述し，フェーズ移行
+                    if (altitude - first_altitude > 10):
+                        phase = 1
+                        print("Go to falling phase")
+                        csv.print('msg', 'Go to falling phase')
                     else:
                         pass
+
                 except Exception as e:
-                    print(f"An error occured in judging transition to short phase, {e}")
-                    csv.print('error', f"An error occured in judging transition to short phase, {e}")
-
-            except Exception as e:
-                print(f"An error occured in long phase: {e}")
-                csv.print('error', f"An error occured in long phase: {e}")
+                    print(f"An error occured in waiting phase: {e}")
+                    csv.print('error', f"An error occured in waiting phase: {e}")
 
 
-        # ゴールとのdistanceが5m 以下になったら近距離フェーズに移行
 
-        # ************************************************** #
-        #            近距離フェーズ(phase = 3)               #
-        # ************************************************** #
-       
-        elif (phase == 3):
+            # 高度がある程度(本番は50m，あとで調整するので暫定でお願い)高くなったら落下フェーズに移行
+            
+            # ************************************************** #
+            #             落下フェーズ(phase = 1)                #
+            # ************************************************** #
+            
+            elif (phase == 1):
 
-            try:
-                led_red.on()
-                led_green.on()
-
-                ## カメラを起動
-                if (CameraStart == False):
-                    picam2.start()
-                    CameraStart = True
-
-                ## カメラの取得したフレームから赤色を探す
-                if (CameraStart == True):
-                    frame = picam2.capture_array()
-                    # 赤色を検出
-                    mask = cam.red_detect(frame)
-                    # 赤色検知の結果を取得
-                    # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール
-                    camera_order = cam.analyze_red(frame, mask)
-                    # 結果表示
-                    time.sleep(1)
-                    #print(len(contours))
-
-                    ## カメラの赤色検知関数の戻り値を参考にしてモーターを動かす
-
+                try:
+                    led_green.on()
+                    led_red.off()
+                    
+                    # bmpの高度(altitude)取得
                     try:
-                        # 中央にゴールがあるとき一秒前進
-                        if (camera_order == 1):
-                            # モーターを回転して前進
+                        # temperature = bmp.get_temperature()
+                        # pressure = bmp.get_pressure()
+                        altitude = bmp.get_altitude(qnh=baseline)
+                        # print(f"temperture{temperature:05.2f}*C")
+                        # print(f"pressure: {pressure:05.2f}hPa")
+                    # 高度をprint
+                        print(f"Relative altitude: {altitude:05.2f} metres")
+                    except Exception as e:
+                        print(f"An error occured in reading bmp: {e}")
+                        csv.print('error', f"An error occured in reading bmp: {e}")
+
+                    # bnoの重力加速度を除いた加速度(Accel)を取得
+                    try:
+                        Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                        # Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                        Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                        # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                        print("Gyro: ", Gyro)
+                        # print("Mag: ", Mag)
+                    # 加速度をprint
+                        print("Accel", Accel)
+                        # print("Accel_all", Accel_all)
+                    except Exception as e:
+                        print(f"An error occured in reading bno055: {e}")
+                        csv.print('error', f"An error occured in reading bno055: {e}")
+
+                    # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
+                    # 条件式を記述し，フェーズ移行
+                    #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
+                    if altitude - first_altitude < 3 and sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
+                        time.sleep(0.5)
+                        Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                        if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
+                            led_green.blink(0.5, 0.5, 20)
+                            led_red.on()
+                            
+                            # パラ分離用抵抗起動
+                            # NiCr_PIN.on()
+                            print("NiCr wire turn on")
+                            csv.print('msg', "NiCr wire turn on")
+                            time.sleep(10)
+
+                            NiCr_PIN.off()
+                            print("NiCr wire turn off. Parachute separated")
+                            csv.print('msg', "NiCr wire turn off. Parachute separated")
+
+                            phase = 2
+                            print("Go to long phase")
+                            csv.print('msg', "Go to long phase")
+                            led_green.off()
+                        
+                        else:
+                            csv.print('msg', 'The stationary condition double check did not pass. Try again.')
+                    else:
+                        pass
+        
+                except Exception as e:
+                    print(f"An error occured in falling phase: {e}")
+                    csv.print('error', f"An error occured in falling phase: {e}")
+
+
+            # ************************************************** #
+            #            遠距離フェーズ(phase = 2)               #
+            # ************************************************** #
+            
+            elif (phase == 2):
+
+                try:
+                    led_green.off()
+                    led_red.on()
+                    
+                    # UART(GPS)受信データ，GPSの緯度経度取得
+                    try:
+                        sentence_all = uart.read(uart.in_waiting).decode('utf-8')
+                        print("GPS data received")
+                        
+                        sentence_list = sentence_all.split('\n')
+
+                        for sentence in sentence_list[-11:-2]:
+                            if DEBUG:
+                                csv.print('nmea', sentence)
+                            for x in sentence:
+                                if 10 <= ord(x) <= 126:
+                                    try:
+                                        stat = gnss.update(x)
+                                        #print("stat:",stat,"x:",x,"chr:",chr(x))
+                                        #print(chr(x))
+                                    except Exception as e:
+                                        print(f"An error occured in updating GPS data: {e}")
+                                        csv.print('error', f"An error occured in updating GPS data: {e}")
+                                    
+                                    try:
+                                        if stat:
+                                            tm = gnss.timestamp
+                                            # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
+                                            latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+                                            # print('=' * 20)
+                                            print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
+                                            print("latitude:", latitude)
+                                            print("longitude:", longtitude)
+                                    except Exception as e:
+                                        print(f"An error occured in loading GPS data : {e}")
+                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
+                                    
+                    except Exception as e:
+                        print(f"An error occured in reading GPS tm, lat,lon: {e}")
+                        csv.print('error', f"An error occured in reading GPS tm, lat,lon: {e}")
+
+
+                    # bno055地磁気Magを取得
+                    try:
+                        # Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                        Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                        # Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                        # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                        # print("Gyro: ", Gyro)
+                        print("Mag: ", Mag)
+                        # print("Accel", Accel)
+                        # print("Accel_all", Accel_all)
+                    except Exception as e:
+                        print(f"An error occured in reading bno055: {e}")
+                        csv.print('error', f"An error occured in reading bno055: {e}")
+
+
+                    # 計算過程はcalc_xyに定義
+                    # ゴールの緯度経度はgoal_latitudeとgoal_longtitude(一番上でフェーズ初期化と一緒に定義)
+                    try:
+                        #1.ゴールの緯度経度をCanSat中心のxy座標で表す。
+                        goal_xy = calc_xy.calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
+                        
+                        #2.緯度経度→→→ゴールと機体の距離を求める
+                        print("goal xy_coordinate: ", goal_xy)                    
+                        csv.print('goal_relative', goal_xy)
+                        # print(goal_xy[0])
+
+                        cansat_to_goal_y_sq = (goal_xy[1])**2
+                        cansat_to_goal_x_sq = (goal_xy[0])**2
+                        distance = np.sqrt(cansat_to_goal_x_sq + cansat_to_goal_y_sq)
+                        csv.print('goal_distance', distance)
+
+                        #3.機体の正面と北の向きの関係＋北の向きとゴールの向きの関係→→→機体の正面とゴールの向きの関係を求める
+                        #やってることとしては東西南北の基底→CanSatの基底に座標変換するために回転行列を使ってる感じ
+                        #North_angle_rad - math.piは、平面直交座標のx軸(西)と北の向きを表すときのx軸(機体の正面)が何度ずれているかを表している
+                        North_angle_rad = np.arctan2(-1 * Mag[1],Mag[0])
+                        cansat_to_goal = calc_xy.Rotation_clockwise_xy(goal_xy,North_angle_rad)
+                        
+                        #4.CanSatの正面とゴールの向きの関係を角度で表現している(radian→degreeの変換も行う)。ただし、角度の定義域は(0<=degree<=360)。正面は0と360で真後ろが180。
+                        cansat_to_goal_angle = np.arctan2(cansat_to_goal[1],cansat_to_goal[0])
+                        cansat_to_goal_angle_degree = math.degrees(cansat_to_goal_angle) + 180
+                        csv.print('goal_relative_angle_rad', cansat_to_goal_angle)
+                        
+                        #5.機体の正面とゴールの向きの関係から、右に曲がるか、左に曲がるか、正面に進むか判断する
+                        print("cansat to goal angle [degree]: ", cansat_to_goal_angle_degree)
+                        print("cansat to goal distance [m]: ", distance)
+                        
+                        if (cansat_to_goal_angle_degree < 30) or (330 < cansat_to_goal_angle_degree):
+                            print("forward")
                             motor.accel(motor_right, motor_left)
-                            print("motor: forward -1s")
-                            time.sleep(1)  # 1秒進む
+                            time.sleep(2)
+                            motor.brake(right_motor, left_motor)
 
-                            # モーターの回転を停止
-                            motor.brake(motor_right, motor_left)
-                            print("motor: brake")
-                            time.sleep(1)  # 1秒止まる
-
-
-                        # 右にゴールがあるとき左に回転
-                        elif (camera_order == 2):
-                            # モーターを回転させ，CanSatを1秒くらい左回転
+                        if (30 < cansat_to_goal_angle_degree <=135):
+                            print("right")
                             motor.rightturn(motor_right, motor_left)
-                            print("motor: rightturn")
-                            time.sleep(1)  # 1秒止まる
+                            time.sleep(1)
 
-                        # 左にゴールがあるとき右に回転
-                        elif (camera_order == 3):
-                            # モーターを回転させ，CanSatを1秒くらい右回転
+                        if (135 <= cansat_to_goal_angle_degree <= 180):
+                            print("sharp_right")
+                            motor.rightturn(motor_right, motor_left)
+                            motor.rightturn(motor_right, motor_left)
+                            time.sleep(1)
+
+                        if (225 < cansat_to_goal_angle_degree <= 330):
+                            print("left")
                             motor.leftturn(motor_right, motor_left)
-                            print("motor: leftturn")
-                            time.sleep(1)  # 1秒止まる
+                            time.sleep(1) 
 
-                        # ゴールが見つからないとき右に回転
-                        elif (camera_order == 0):
-                            # モーターを回転させ，CanSatを1秒くらい右回転
-                            motor.rightturn(motor_right, motor_left)
-                            print("motor: rightturn")
-                            time.sleep(1)  # 1秒止まる
+                        if (180 < cansat_to_goal_angle_degree < 225):
+                            print("sharp_left")
+                            motor.leftturn(motor_right, motor_left)
+                            motor.leftturn(motor_right, motor_left)
+                            time.sleep(1)  
 
                     except Exception as e:
-                        print(f"An error occured in moving motor: {e}")
-                        # モーターを強制停止
-                        motor_left.value = 0.0
-                        motor_right.value = 0.0
+                        print(f"An error occured in calculating goal_xy: {e}")
+                        csv.print('error', f"An error occured in calculating goal_xy: {e}")
 
 
-                        ## 赤色検知関数の戻り値を参考にフェーズ移行
-                        ## 条件式を記述し，whileループを抜けてゴール判定
-                        #ゴールについたらフェーズ4に移行
+                    # ゴールとの距離が5m(10m?)で近距離フェーズに移行
+                    # 条件式を記述し，フェーズ移行
                     try:
-                        if (camera_order == 4):
-                            motor.accel(motor_right, motor_left)
-                            time.sleep(1.2)
-                            motor.brake(motor_right, motor_left)
+                        if (distance <= 5):
+                            phase = 3
                             
-                            phase = 4
-                            csv.print('phase', phase)
-                            # ゴール判定
-                            print("Goal Goal Goal")
-                            csv.print('msg', 'Goal')
-                        
+                            motor.brake(motor_right, motor_left)
+                            print("Go to short phase")
+                            csv.print('msg', "Go to short phase")
+
                         else:
                             pass
                     except Exception as e:
-                        print(f"An error occured in judging goal... (;_;): {e}")
-                        csv.print('error', f"An error occured in judging goal...: {e}")
+                        print(f"An error occured in judging transition to short phase, {e}")
+                        csv.print('error', f"An error occured in judging transition to short phase, {e}")
+
+                except Exception as e:
+                    print(f"An error occured in long phase: {e}")
+                    csv.print('error', f"An error occured in long phase: {e}")
 
 
-            except Exception as e:
-                print(f"An error occured in short phase: {e}")
-                csv.print('error', f"An error occured in short phase: {e}")
+            # ゴールとのdistanceが5m 以下になったら近距離フェーズに移行
+
+            # ************************************************** #
+            #            近距離フェーズ(phase = 3)               #
+            # ************************************************** #
         
+            elif (phase == 3):
 
-        # カメラで取得した画像内の赤色が大きかったらゴールフェーズに移行
+                try:
+                    led_red.on()
+                    led_green.on()
 
-        # ************************************************** #
-        #            ゴールフェーズ(phase = 4)               #
-        # ************************************************** #
+                    ## カメラを起動
+                    if (CameraStart == False):
+                        picam2.start()
+                        CameraStart = True
 
-        elif phase == 4:
-            try:
-                led_green.blink(0.5, 0.5, 10)
-                led_red.blink(0.5, 0.5, 10)
-                motor_left.value = 0.0
-                motor_right.value = 0.0
+                    ## カメラの取得したフレームから赤色を探す
+                    if (CameraStart == True):
+                        frame = picam2.capture_array()
+                        # 赤色を検出
+                        mask = cam.red_detect(frame)
+                        # 赤色検知の結果を取得
+                        # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール
+                        camera_order = cam.analyze_red(frame, mask)
+                        # 結果表示
+                        time.sleep(1)
+                        #print(len(contours))
 
-                # 待っている間にいろいろデータを取得
-                bmp.get_altitude()
-                bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-                bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                bno.getVector(BNO055.VECTOR_EULER)
-                bno.getVector(BNO055.VECTOR_GRAVITY)
-                bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                frame = picam2.capture_array()
-                mask = cam.red_detect(frame)
-                cam.analyze_red(frame, mask)
-            except Exception as e:
-                print(f"An error occured in goal phase: {e}")
-                csv.print('error', f"An error occured in goal phase: {e}")
+                        ## カメラの赤色検知関数の戻り値を参考にしてモーターを動かす
+
+                        try:
+                            # 中央にゴールがあるとき一秒前進
+                            if (camera_order == 1):
+                                # モーターを回転して前進
+                                motor.accel(motor_right, motor_left)
+                                print("motor: forward -1s")
+                                time.sleep(1)  # 1秒進む
+
+                                # モーターの回転を停止
+                                motor.brake(motor_right, motor_left)
+                                print("motor: brake")
+                                time.sleep(1)  # 1秒止まる
+
+
+                            # 右にゴールがあるとき左に回転
+                            elif (camera_order == 2):
+                                # モーターを回転させ，CanSatを1秒くらい左回転
+                                motor.rightturn(motor_right, motor_left)
+                                print("motor: rightturn")
+                                time.sleep(1)  # 1秒止まる
+
+                            # 左にゴールがあるとき右に回転
+                            elif (camera_order == 3):
+                                # モーターを回転させ，CanSatを1秒くらい右回転
+                                motor.leftturn(motor_right, motor_left)
+                                print("motor: leftturn")
+                                time.sleep(1)  # 1秒止まる
+
+                            # ゴールが見つからないとき右に回転
+                            elif (camera_order == 0):
+                                # モーターを回転させ，CanSatを1秒くらい右回転
+                                motor.rightturn(motor_right, motor_left)
+                                print("motor: rightturn")
+                                time.sleep(1)  # 1秒止まる
+
+                        except Exception as e:
+                            print(f"An error occured in moving motor: {e}")
+                            # モーターを強制停止
+                            motor_left.value = 0.0
+                            motor_right.value = 0.0
+
+
+                            ## 赤色検知関数の戻り値を参考にフェーズ移行
+                            ## 条件式を記述し，whileループを抜けてゴール判定
+                            #ゴールについたらフェーズ4に移行
+                        try:
+                            if (camera_order == 4):
+                                motor.accel(motor_right, motor_left)
+                                time.sleep(1.2)
+                                motor.brake(motor_right, motor_left)
+                                
+                                phase = 4
+                                csv.print('phase', phase)
+                                # ゴール判定
+                                print("Goal Goal Goal")
+                                csv.print('msg', 'Goal')
+                            
+                            else:
+                                pass
+                        except Exception as e:
+                            print(f"An error occured in judging goal... (;_;): {e}")
+                            csv.print('error', f"An error occured in judging goal...: {e}")
+
+
+                except Exception as e:
+                    print(f"An error occured in short phase: {e}")
+                    csv.print('error', f"An error occured in short phase: {e}")
+            
+
+            # カメラで取得した画像内の赤色が大きかったらゴールフェーズに移行
+
+            # ************************************************** #
+            #            ゴールフェーズ(phase = 4)               #
+            # ************************************************** #
+
+            elif phase == 4:
+                try:
+                    led_green.blink(0.5, 0.5, 10)
+                    led_red.blink(0.5, 0.5, 10)
+                    motor_left.value = 0.0
+                    motor_right.value = 0.0
+
+                    # 待っている間にいろいろデータを取得
+                    bmp.get_altitude()
+                    bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                    bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                    bno.getVector(BNO055.VECTOR_EULER)
+                    bno.getVector(BNO055.VECTOR_GRAVITY)
+                    bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                    bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                    frame = picam2.capture_array()
+                    mask = cam.red_detect(frame)
+                    cam.analyze_red(frame, mask)
+                except Exception as e:
+                    print(f"An error occured in goal phase: {e}")
+                    csv.print('error', f"An error occured in goal phase: {e}")
+        except Exception as e:
+            print(f"An error occured in main loop: {e}")
+            csv.print('serious_error', f"An error occured in main loop: {e}")
 
 
 
