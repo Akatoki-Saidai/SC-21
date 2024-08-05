@@ -111,6 +111,11 @@ class MicropyGPS(object):
         """Format Latitude Data Correctly"""
         if self.coord_format == 'dd':
             decimal_degrees = self._latitude[0] + (self._latitude[1] / 60)
+
+            # 0度は異常
+            if decimal_degrees == 0:
+                raise(ValueError(f'latitude is abnormal: {decimal_degrees}'))
+            
             csv.print('lat', decimal_degrees)  # 測地値を記録
             return [decimal_degrees, self._latitude[2]]
         elif self.coord_format == 'dms':
@@ -125,6 +130,11 @@ class MicropyGPS(object):
         """Format Longitude Data Correctly"""
         if self.coord_format == 'dd':
             decimal_degrees = self._longitude[0] + (self._longitude[1] / 60)
+            
+            # 0度は異常
+            if decimal_degrees == 0:
+                raise(ValueError(f'longtitude is abnormal: {decimal_degrees}'))
+            
             csv.print('lon', decimal_degrees)  # 測地値を記録
             return [decimal_degrees, self._longitude[2]]
         elif self.coord_format == 'dms':
