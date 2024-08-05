@@ -42,8 +42,8 @@ def accel(right, left):
 
 
 def brake(right, left):
-    power_r = right.value
-    power_l = left.value
+    power_r = float(right.value)
+    power_l = float(left.value)
 
     csv.print('motor', [power_r, power_l])
 
