@@ -156,7 +156,7 @@ def main():
         baseline = bmp.get_baseline()
         print("baseline: ", baseline)
         csv.print('alt_base_press', baseline)
-        first_altitude = bmp.get_altitude()
+        first_altitude = bmp.get_altitude(qnh=baseline)
         csv.print('msg', f'first_altitude: {first_altitude}')
 
     except Exception as e:
@@ -561,7 +561,7 @@ def main():
                     motor_right.value = 0.0
 
                     # 待っている間にいろいろデータを取得
-                    bmp.get_altitude()
+                    bmp.get_altitude(qnh=baseline)
                     bno.getVector(BNO055.VECTOR_MAGNETOMETER)
                     bno.getVector(BNO055.VECTOR_GYROSCOPE)
                     bno.getVector(BNO055.VECTOR_EULER)
