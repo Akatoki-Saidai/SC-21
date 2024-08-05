@@ -397,7 +397,7 @@ def main():
                             print("forward")
                             motor.accel(motor_right, motor_left)
                             time.sleep(2)
-                            motor.brake(right_motor, left_motor)
+                            motor.brake(motor_right, motor_left)
 
                         if (30 < cansat_to_goal_angle_degree <=135):
                             print("right")
