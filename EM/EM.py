@@ -155,7 +155,7 @@ def main():
     try:
         baseline = bmp.get_baseline()
         print("baseline: ", baseline)
-        csv.print('alt_base_press', baseline)
+        # csv.print('alt_base_press', baseline)
         first_altitude = bmp.get_altitude(qnh=baseline)
         csv.print('msg', f'first_altitude: {first_altitude}')
 
@@ -258,7 +258,7 @@ def main():
                         print("Gyro: ", Gyro)
                         # print("Mag: ", Mag)
                     # 加速度をprint
-                        print("Accel", Accel)
+                        print("Accel: ", Accel)
                         # print("Accel_all", Accel_all)
                     except Exception as e:
                         print(f"An error occured in reading bno055: {e}")
@@ -340,7 +340,7 @@ def main():
                                             print("longitude:", longtitude)
                                     except Exception as e:
                                         print(f"An error occured in loading GPS data : {e}")
-                                        csv.print('errro', f"An error occured in loading GPS data : {e}")
+                                        csv.print('error', f"An error occured in loading GPS data : {e}")
                                     
                     except Exception as e:
                         print(f"An error occured in reading GPS tm, lat,lon: {e}")
@@ -355,8 +355,8 @@ def main():
                         # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
                         # print("Gyro: ", Gyro)
                         print("Mag: ", Mag)
-                        # print("Accel", Accel)
-                        # print("Accel_all", Accel_all)
+                        # print("Accel: ", Accel)
+                        # print("Accel_all: ", Accel_all)
                     except Exception as e:
                         print(f"An error occured in reading bno055: {e}")
                         csv.print('error', f"An error occured in reading bno055: {e}")
@@ -365,6 +365,18 @@ def main():
                     # 計算過程はcalc_xyに定義
                     # ゴールの緯度経度はgoal_latitudeとgoal_longtitude(一番上でフェーズ初期化と一緒に定義)
                     try:
+                        # まず圧倒的に日本の外だったらやり直し
+                        if latitude:
+                            if (latitude <= 130) or (latitude >= 150):
+                                print(f'GNSS measurement value is invalid. latitude: {latitude}')
+                                csv.print('error', f'GNSS measurement value is invalid. latitude: {latitude}')
+                                continue
+                        if longtitude:
+                            if (longtitude <= 30) or (longtitude >= 50):
+                                print(f'GNSS measurement value is invalid. longtitude: {longtitude}')
+                                csv.print('error', f'GNSS measurement value is invalid. longtitude: {longtitude}')
+                                continue
+
                         #1.ゴールの緯度経度をCanSat中心のxy座標で表す。
                         goal_xy = calc_xy.calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
                         
@@ -447,7 +459,7 @@ def main():
                     csv.print('error', f"An error occured in long phase: {e}")
 
 
-            # ゴールとのdistanceが5m 以下になったら近距離フェーズに移行
+            # ゴールとのdistanceが5m以下になったら近距離フェーズに移行
 
             # ************************************************** #
             #            近距離フェーズ(phase = 3)               #
