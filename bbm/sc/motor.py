@@ -5,6 +5,7 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 # 制御量の出力用
 import csv_print as csv
 
+delta_power = 0.20
 
 def setup(AIN1, AIN2, BIN1, BIN2):
 
@@ -29,10 +30,11 @@ def setup(AIN1, AIN2, BIN1, BIN2):
 def accel(right, left):
     csv.print('motor', [0, 0])
     power = 0
-    for i in range(int(1 / 0.05)):
-        right.value = power
+    for i in range(int(1 / delta_power)):
+        if 0<=power<=1:
+                right.value = power
         left.value = power
-        power += 0.05
+        power += delta_power
 
     right.value = 1
     left.value = 1
@@ -47,19 +49,20 @@ def brake(right, left):
 
     csv.print('motor', [power_r, power_l])
 
-    for i in range(int(1 / 0.05)):
-        right.value = power_r
-        left.value = power_l
+    for i in range(int(1 / delta_power)):
+        if 0<=power_r<=1 and 0<=power_l<=1:
+            right.value = power_r
+            left.value = power_l
         if power_r > 0:
-            power_r -= 0.05
+            power_r -= delta_power
         elif power_r < 0:
-            power_r += 0.05
+            power_r += delta_power
         else:
             pass
         if power_l > 0:
-            power_l -= 0.05
+            power_l -= delta_power
         elif power_l < 0:
-            power_l += 0.05
+            power_l += delta_power
         else:
             pass
 
@@ -75,12 +78,12 @@ def leftturn(right, left):
     left.value = 0
     csv.print('motor', [0, 0])
     power = 0
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = power
             left.value = -1 * power
         
-        power += 0.05
+        power += delta_power
 
     power = 1
     right.value = 1
@@ -89,12 +92,12 @@ def leftturn(right, left):
 
     time.sleep(1)
 
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = power
             left.value = -1 * power
         
-        power -= 0.05
+        power -= delta_power
 
     right.value = 0
     left.value = 0
@@ -110,12 +113,12 @@ def rightturn(right, left):
     left.value = 0
     csv.print('motor', [0, 0])
     power = 0
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = -1 * power
             left.value = power
         
-        power += 0.05
+        power += delta_power
 
     power = 1
     right.value = -1
@@ -124,12 +127,12 @@ def rightturn(right, left):
 
     time.sleep(1)
 
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = -1 * power
             left.value = power
         
-        power -= 0.05
+        power -= delta_power
             
     right.value = 0
     left.value = 0
@@ -147,11 +150,11 @@ def rightonly(right, left):
     csv.print('motor', [0, 0])
 
     power = 0
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = power
 
-        power += 0.05
+        power += delta_power
 
     power = 1
     right.value = 1
@@ -159,11 +162,11 @@ def rightonly(right, left):
 
     time.sleep(1)
 
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             right.value = power
             
-        power -= 0.05
+        power -= delta_power
 
     right.value = 0
     csv.print('motor_r', 0)
@@ -178,11 +181,11 @@ def leftonly(right, left):
     csv.print('motor', [0, 0])
     power = 0
 
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             left.value = power
         
-        power += 0.05
+        power += delta_power
 
     power = 1
     left.value = 1
@@ -190,11 +193,11 @@ def leftonly(right, left):
 
     time.sleep(1)
 
-    for i in range(int(1 / 0.05)):
+    for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
             left.value = power
         
-        power -= 0.05
+        power -= delta_power
         
     left.value = 0
     csv.print('motor_l', 0)
