@@ -5,6 +5,7 @@ from gpiozero import LED
 from picamera2 import Picamera2
 import math
 import numpy as np
+import cv2
 
 # scに使用ライブラリほぼまとめました
 import motor
@@ -483,10 +484,17 @@ def main():
                         mask = cam.red_detect(frame)
                         # 赤色検知の結果を取得
                         # analize_redの戻り値は0が見つからない，1が中心，2が右，3が左，4がゴール
-                        camera_order = cam.analyze_red(frame, mask)
+                        frame, camera_order = cam.analyze_red(frame, mask)
                         # 結果表示
+                        cv2.imshow('kekka', frame)
                         time.sleep(1)
                         #print(len(contours))
+
+                        if cv2.waitKey(25) & 0xFF == ord('q'):
+                            cv2.destroyAllWindows()
+                            print('q interrupted direction by camera')
+                            csv.print('msg', 'q interrupted direction by camera')
+                            continue
 
                         ## カメラの赤色検知関数の戻り値を参考にしてモーターを動かす
 
