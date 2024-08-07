@@ -1,9 +1,12 @@
 import time
 from gpiozero import Motor
 from gpiozero.pins.pigpio import PiGPIOFactory
+import numpy as np
 
 # 制御量の出力用
 import csv_print as csv
+
+from bno055 import BNO055
 
 delta_power = 0.20
 
@@ -201,3 +204,64 @@ def leftonly(right, left):
         
     left.value = 0
     csv.print('motor_l', 0)
+
+
+def right_angle(bno, angle_deg, right, left):
+    angle_rad = angle_deg*np.pi()/180
+    mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+    start_time = time.time()
+    prev_angle = np.arctan2(-mag[1], mag[0])
+    rot_angle = 0
+    for i in range(1 // delta_power):
+        right.value, left.value = -i*delta_power, i*delta_power
+    right.value, left.value = -1, 1
+
+    while (time.time()-start_time) < 5:
+        try:
+            mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+            now_angle = np.arctan2(-mag[1], mag[0])
+            angle_diff = now_angle - prev_angle
+            if angle_diff > 6:
+                angle_diff -= 2*np.pi()
+            elif angle_diff < -6:
+                angle_diff += 2*np.pi()
+            rot_angle += angle_diff
+            
+            if rot_angle < -angle_rad:
+                right.value, left.value = 0, 0
+                break
+
+            prev_angle = now_angle
+        except Exception as e:
+            print(f'An error occured in right_angle: {e}')
+            csv.print('error', f'An error occured in right_angle: {e}')
+
+def left_angle(bno, angle_deg, right, left):
+    angle_rad = angle_deg*np.pi()/180
+    mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+    start_time = time.time()
+    prev_angle = np.arctan2(-mag[1], mag[0])
+    rot_angle = 0
+    for i in range(1 // delta_power):
+        right.value, left.value = i*delta_power, -i*delta_power
+    right.value, left.value = 1, -1
+
+    while (time.time()-start_time) < 5:
+        try:
+            mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+            now_angle = np.arctan2(-mag[1], mag[0])
+            angle_diff = now_angle - prev_angle
+            if angle_diff > 6:
+                angle_diff -= 2*np.pi()
+            elif angle_diff < -6:
+                angle_diff += 2*np.pi()
+            rot_angle += angle_diff
+            
+            if rot_angle > angle_rad:
+                right.value, left.value = 0, 0
+                break
+
+            prev_angle = now_angle
+        except Exception as e:
+            print(f'An error occured in left_angle: {e}')
+            csv.print('error', f'An error occured in left_angle: {e}')
