@@ -59,7 +59,7 @@ class Camera:
             # 最大の領域の面積を表示する
             cv2.putText(frame, str(area), (rect[0], rect[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 1)
 
-            cv2.putText(frame, str(center_x), (center_x, center_y - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 1)
+            # cv2.putText(frame, str(center_x), (center_x, center_y - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 1)
 
 
             frame_center_x = frame.shape[1] // 2
@@ -71,7 +71,7 @@ class Camera:
                 csv.print('camera_order', 'close')
                 camera_order = 4
 
-            elif area > 150:
+            elif area > 10:
                 if frame_center_x -  50 <= center_x <= frame_center_x + 50:
                     print("The red object is in the center")#直進
                     csv.print('camera_order', 'center')
@@ -95,8 +95,8 @@ class Camera:
             print("The red object is None")
             csv.print('camera_order', 'none')
             
-        cv2.imshow("Frame", frame)
+        # cv2.imshow("Frame", frame)
         # cv2.imshow("Mask", mask)
 
-        return camera_order
+        return frame, camera_order
 
