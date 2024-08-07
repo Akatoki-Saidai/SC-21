@@ -471,6 +471,14 @@ def main():
                     led_red.on()
                     led_green.on()
 
+                    try:
+                        bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                        bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                        bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                    except Exception as e:
+                        print(f"An error occured in reading bno055: {e}")
+                        csv.print('error', f"An error occured in reading bno055: {e}")
+
                     ## カメラを起動
                     if (CameraStart == False):
                         picam2.start()
