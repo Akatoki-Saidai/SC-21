@@ -5,10 +5,10 @@ import time
 
 # モータードライバセットアップ
 try:
-	PIN_AIN1 = 23  # 17
-	PIN_AIN2 = 4  # 4
-	PIN_BIN1 = 5  # 16
-	PIN_BIN2 = 13  # 13
+	PIN_AIN1 = 4   # 17
+	PIN_AIN2 = 23  # 4
+	PIN_BIN1 = 13  # 16
+	PIN_BIN2 = 5   # 13
 
 	motor_right, motor_left = motor.setup(PIN_AIN1, PIN_AIN2, PIN_BIN1, PIN_BIN2)
 
