@@ -307,7 +307,9 @@ class BNO055:
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
 			result_vector = [i/scalingFactor for i in xyz_m]
-			if sum(abs(n) for n in result_vector) > 150:
+			if not(55 < sum(abs(n) for n in result_vector) < 100):
+				raise(ValueError(f'BNO measurement is abnormal. mag: {result_vector}'))
+			if not(-50 < result_vector[0] < 50 and -50 < result_vector[1] < 50 and -50 < result_vector[2] < 50):
 				raise(ValueError(f'BNO measurement is abnormal. mag: {result_vector}'))
 			csv.print('mag', result_vector)
 		elif vectorType == BNO055.VECTOR_GYROSCOPE:
