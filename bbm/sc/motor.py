@@ -13,10 +13,10 @@ delta_power = 0.20
 def setup(AIN1, AIN2, BIN1, BIN2):
 
     dcm_pins = {
-                "left_forward": AIN2,
-                "left_backward": AIN1,
-                "right_forward": BIN2,
-                "right_backward": BIN1,
+                "left_forward": BIN2,
+                "left_backward": BIN1,
+                "right_forward": AIN1,
+                "right_backward": AIN2,
             }
 
     factory = PiGPIOFactory()
@@ -207,7 +207,7 @@ def leftonly(right, left):
 
 
 def right_angle(bno, angle_deg, right, left):
-    angle_rad = angle_deg*np.pi()/180
+    angle_rad = angle_deg*np.pi/180
     mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
     start_time = time.time()
     prev_angle = np.arctan2(-mag[1], mag[0])
@@ -222,9 +222,9 @@ def right_angle(bno, angle_deg, right, left):
             now_angle = np.arctan2(-mag[1], mag[0])
             angle_diff = now_angle - prev_angle
             if angle_diff > 6:
-                angle_diff -= 2*np.pi()
+                angle_diff -= 2*np.pi
             elif angle_diff < -6:
-                angle_diff += 2*np.pi()
+                angle_diff += 2*np.pi
             rot_angle += angle_diff
             
             if rot_angle < -angle_rad:
@@ -237,7 +237,7 @@ def right_angle(bno, angle_deg, right, left):
             csv.print('error', f'An error occured in right_angle: {e}')
 
 def left_angle(bno, angle_deg, right, left):
-    angle_rad = angle_deg*np.pi()/180
+    angle_rad = angle_deg*np.pi/180
     mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
     start_time = time.time()
     prev_angle = np.arctan2(-mag[1], mag[0])
@@ -252,9 +252,9 @@ def left_angle(bno, angle_deg, right, left):
             now_angle = np.arctan2(-mag[1], mag[0])
             angle_diff = now_angle - prev_angle
             if angle_diff > 6:
-                angle_diff -= 2*np.pi()
+                angle_diff -= 2*np.pi
             elif angle_diff < -6:
-                angle_diff += 2*np.pi()
+                angle_diff += 2*np.pi
             rot_angle += angle_diff
             
             if rot_angle > angle_rad:
