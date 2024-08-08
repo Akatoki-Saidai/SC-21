@@ -219,15 +219,18 @@ def right_angle(bno, angle_deg, right, left):
     while (time.time()-start_time) < 5:
         try:
             mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+            gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
             now_angle = np.arctan2(-mag[1], mag[0])
             angle_diff = now_angle - prev_angle
-            if angle_diff > 6:
+            if angle_diff > 4:
                 angle_diff -= 2*np.pi
-            elif angle_diff < -6:
+            elif angle_diff < -4:
                 angle_diff += 2*np.pi
+            elif angle_diff < -0.2 or 0.2 < angle_diff:
+                angle_diff = 0
             rot_angle += angle_diff
             
-            if rot_angle < -angle_rad:
+            if rot_angle > angle_rad:
                 right.value, left.value = 0, 0
                 break
 
@@ -249,15 +252,18 @@ def left_angle(bno, angle_deg, right, left):
     while (time.time()-start_time) < 5:
         try:
             mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+            gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
             now_angle = np.arctan2(-mag[1], mag[0])
             angle_diff = now_angle - prev_angle
-            if angle_diff > 6:
+            if angle_diff > 4:
                 angle_diff -= 2*np.pi
-            elif angle_diff < -6:
+            elif angle_diff < -4:
                 angle_diff += 2*np.pi
+            elif angle_diff < -0.2 or 0.2 < angle_diff:
+                angle_diff = 0
             rot_angle += angle_diff
             
-            if rot_angle > angle_rad:
+            if rot_angle < -angle_rad:
                 right.value, left.value = 0, 0
                 break
 
