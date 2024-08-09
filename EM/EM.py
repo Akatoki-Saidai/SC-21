@@ -37,9 +37,9 @@ def main():
     
     # フェーズ，ゴール設定
     try:
-        phase = 0
+        phase = 2
         csv.print('phase', phase)
-        goal_lat_lon = (35.8605938,139.606272)
+        goal_lat_lon = (35.86061183333333, 139.6062195)
         goal_latitude = goal_lat_lon[0]
         csv.print('goal_lat', goal_latitude)
         goal_longitude = goal_lat_lon[1]
@@ -388,13 +388,13 @@ def main():
                     # ゴールの緯度経度はgoal_latitudeとgoal_longitude(一番上でフェーズ初期化と一緒に定義)
                     try:
                         # まず圧倒的に日本の外だったらやり直し
-                        if latitude:
-                            if (latitude <= 130) or (latitude >= 150):
+                        if longitude:
+                            if (longitude <= 130) or (longitude >= 150):
                                 print(f'GNSS measurement value is invalid. latitude: {latitude}')
                                 csv.print('error', f'GNSS measurement value is invalid. latitude: {latitude}')
                                 continue
-                        if longitude:
-                            if (longitude <= 30) or (longitude >= 50):
+                        if latitude:
+                            if (latitude <= 30) or (latitude >= 50):
                                 print(f'GNSS measurement value is invalid. longitude: {longitude}')
                                 csv.print('error', f'GNSS measurement value is invalid. longitude: {longitude}')
                                 continue
@@ -544,21 +544,24 @@ def main():
                             # 右にゴールがあるとき左に回転
                             elif (camera_order == 2):
                                 # モーターを回転させ，CanSatを1秒くらい左回転
-                                motor.right_angle(bno, 15, motor_right, motor_left)
+                                # motor.right_angle(bno, 15, motor_right, motor_left)
+                                motor.rightturn(motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # 左にゴールがあるとき右に回転
                             elif (camera_order == 3):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                motor.left_angle(bno, 15, motor_right, motor_left)
+                                # motor.left_angle(bno, 15, motor_right, motor_left)
+                                motor.leftturn(motor_right, motor_left)
                                 print("motor: leftturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # ゴールが見つからないとき右に回転
                             elif (camera_order == 0):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                motor.right_angle(bno, 30, motor_right, motor_left)
+                                # motor.right_angle(bno, 30, motor_right, motor_left)
+                                motor.rightturn(motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
 
@@ -575,9 +578,10 @@ def main():
                         try:
                             if (camera_order == 4):
                                 motor.accel(motor_right, motor_left)
-                                time.sleep(1.2)
+                                time.sleep(0.5)
                                 motor.brake(motor_right, motor_left)
                                 
+                                # cv2.destroyAllWindows()
                                 phase = 4
                                 csv.print('phase', phase)
                                 # ゴール判定
@@ -619,7 +623,10 @@ def main():
                     bno.getVector(BNO055.VECTOR_ACCELEROMETER)
                     frame = picam2.capture_array()
                     mask = cam.red_detect(frame)
-                    cam.analyze_red(frame, mask)
+                    frame, _ = cam.analyze_red(frame, mask)
+                    cv2.imshow("after goal", frame)
+                    if cv2.waitKey(0):
+                        pass
                 except Exception as e:
                     print(f"An error occured in goal phase: {e}")
                     csv.print('error', f"An error occured in goal phase: {e}")

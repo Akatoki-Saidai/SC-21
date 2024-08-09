@@ -66,7 +66,7 @@ class Camera:
             csv.print('camera_frame_size_x', frame.shape[1])
 
             # 中心座標のx座標が画像の中心より大きいか小さいか判定
-            if area > 12000:
+            if area > 7000:
                 print("Close enough to red")
                 csv.print('camera_order', 'close')
                 camera_order = 4
