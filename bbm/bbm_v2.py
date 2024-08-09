@@ -192,7 +192,7 @@ def main():
                             try:
                                 tm = gnss.timestamp
                                 # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-                                latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+                                latitude, longitude = gnss.latitude[0], gnss.longitude[0]
                                 # print('=' * 20)
                                 print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                 print("latitude:", gnss.latitude[0])

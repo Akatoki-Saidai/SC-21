@@ -297,7 +297,7 @@ def main():
                                 tm = my_gps.timestamp
                                 tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])                            
                                 if (tm_now - tm_last) >= tm_interval:
-                                    latitude, longtitude = my_gps.latitude[0], my_gps.longitude[0]
+                                    latitude, longitude = my_gps.latitude[0], my_gps.longitude[0]
                                     print('=' * 20)
                                     print(my_gps.date_string(), tm[0], tm[1], int(tm[2]))
                                     print("latitude:", my_gps.latitude[0], ", longitude:", my_gps.longitude[0])

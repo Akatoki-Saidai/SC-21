@@ -42,8 +42,8 @@ def main():
         goal_lat_lon = (35.8605938,139.606272)
         goal_latitude = goal_lat_lon[0]
         csv.print('goal_lat', goal_latitude)
-        goal_longtitude = goal_lat_lon[1]
-        csv.print('goal_lon', goal_longtitude)
+        goal_longitude = goal_lat_lon[1]
+        csv.print('goal_lon', goal_longitude)
         
         # baselineも先に定義
         baseline = 1013.25
@@ -349,17 +349,17 @@ def main():
                                         if stat:
                                             tm = gnss.timestamp
                                             # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-                                            latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+                                            latitude, longitude = gnss.latitude[0], gnss.longitude[0]
                                             print("latitude[1]:",gnss.latitude[1])
-                                            print("longtitude[1]:",gnss.longtitude[1])
+                                            print("longitude[1]:",gnss.longitude[1])
                                             if gnss.latitude[1] == "S":
                                                 latitude = -1 * latitude
-                                            if gnss.longtitude[1] == "W":
-                                                lomgtitude = -1 * longtitude
+                                            if gnss.longitude[1] == "W":
+                                                lomgtitude = -1 * longitude
                                             # print('=' * 20)
                                             print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                             print("latitude:", latitude)
-                                            print("longitude:", longtitude)
+                                            print("longitude:", longitude)
                                     except Exception as e:
                                         print(f"An error occured in loading GPS data : {e}")
                                         csv.print('error', f"An error occured in loading GPS data : {e}")
@@ -385,7 +385,7 @@ def main():
 
 
                     # 計算過程はcalc_xyに定義
-                    # ゴールの緯度経度はgoal_latitudeとgoal_longtitude(一番上でフェーズ初期化と一緒に定義)
+                    # ゴールの緯度経度はgoal_latitudeとgoal_longitude(一番上でフェーズ初期化と一緒に定義)
                     try:
                         # まず圧倒的に日本の外だったらやり直し
                         if latitude:
@@ -393,14 +393,14 @@ def main():
                                 print(f'GNSS measurement value is invalid. latitude: {latitude}')
                                 csv.print('error', f'GNSS measurement value is invalid. latitude: {latitude}')
                                 continue
-                        if longtitude:
-                            if (longtitude <= 30) or (longtitude >= 50):
-                                print(f'GNSS measurement value is invalid. longtitude: {longtitude}')
-                                csv.print('error', f'GNSS measurement value is invalid. longtitude: {longtitude}')
+                        if longitude:
+                            if (longitude <= 30) or (longitude >= 50):
+                                print(f'GNSS measurement value is invalid. longitude: {longitude}')
+                                csv.print('error', f'GNSS measurement value is invalid. longitude: {longitude}')
                                 continue
 
                         #1.ゴールの緯度経度をCanSat中心のxy座標で表す。
-                        goal_xy = calc_xy.calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
+                        goal_xy = calc_xy.calc_xy(goal_latitude,goal_longitude,latitude,longitude)
                         
                         #2.緯度経度→→→ゴールと機体の距離を求める
                         print("goal xy_coordinate: ", goal_xy)                    
@@ -672,7 +672,7 @@ def main():
 
     #     # "GPS"を使うコード
     #     # GPSを使う際は以下のコードを使用する
-    #     # GPSデータを取得し，今いるlatitude, longtitudeを取得できる
+    #     # GPSデータを取得し，今いるlatitude, longitudeを取得できる
 
     #     # UART(GPS)受信データ取得(旧版)
     #     try:
@@ -698,7 +698,7 @@ def main():
     #                         try:
     #                             tm = gnss.timestamp
     #                             # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-    #                             latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+    #                             latitude, longitude = gnss.latitude[0], gnss.longitude[0]
     #                             # print('=' * 20)
     #                             print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
     #                             print("latitude:", gnss.latitude[0])

@@ -133,7 +133,7 @@ class MicropyGPS(object):
             
             # 0度は異常
             if decimal_degrees == 0:
-                raise(ValueError(f'longtitude is abnormal: {decimal_degrees}'))
+                raise(ValueError(f'longitude is abnormal: {decimal_degrees}'))
             
             csv.print('lon', decimal_degrees)  # 測地値を記録
             return [decimal_degrees, self._longitude[2]]

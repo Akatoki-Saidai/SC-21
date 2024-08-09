@@ -88,10 +88,10 @@ def Rotation_clockwise_xy(vec_xy,radian):
 #Test用に緯度経度を手動で入れれるようにしています。(EMにはいらないコード)
 goal = (35.86469513698247,139.60733251085654)
 goal_latitude = goal[0]
-goal_longtitude = goal[1]
+goal_longitude = goal[1]
 cansat = (35.86472991568935, 139.60730300655817)
 latitude = cansat[0]
-longtitude = cansat[1]
+longitude = cansat[1]
 Mag = (0.000000,1.000000)
 #----------------------------------------------------------
 #ここから下をEMにコピーしてください。Test用にモーターを動かす部分とデータ取得の部分をコメントアウトしているので動かす際には復活させといてください
@@ -120,7 +120,7 @@ Mag = (0.000000,1.000000)
 #             try:
 #                 tm = gnss.timestamp
 #                 # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
-#                 latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+#                 latitude, longitude = gnss.latitude[0], gnss.longitude[0]
 #                 # print('=' * 20)
 #                 print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
 #                 print("latitude:", gnss.latitude[0])
@@ -149,7 +149,7 @@ Mag = (0.000000,1.000000)
 
 #以下は取得したデータを処理するコードです。
 #1.ゴールの緯度経度をCanSat中心のxy座標で表す。
-goal_xy = calc_xy(goal_latitude,goal_longtitude,latitude,longtitude)
+goal_xy = calc_xy(goal_latitude,goal_longitude,latitude,longitude)
 #2.緯度経度→→→ゴールと機体の距離を求める
 print(goal_xy)
 print(goal_xy[0])
