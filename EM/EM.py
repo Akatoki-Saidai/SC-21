@@ -39,9 +39,10 @@ def main():
     try:
         phase = 0
         csv.print('phase', phase)
-        goal_latitude = 35.8605938
+        goal_lat_lon = (35.8605938,139.606272)
+        goal_latitude = goal_lat_lon[0]
         csv.print('goal_lat', goal_latitude)
-        goal_longtitude = 139.606272
+        goal_longtitude = goal_lat_lon[1]
         csv.print('goal_lon', goal_longtitude)
         
         # baselineも先に定義
@@ -349,6 +350,12 @@ def main():
                                             tm = gnss.timestamp
                                             # tm_now = (tm[0] * 3600) + (tm[1] * 60) + int(tm[2])
                                             latitude, longtitude = gnss.latitude[0], gnss.longitude[0]
+                                            print("latitude[1]:",gnss.latitude[1])
+                                            print("longtitude[1]:",gnss.longtitude[1])
+                                            if gnss.latitude[1] == "S":
+                                                latitude = -1 * latitude
+                                            if gnss.longtitude[1] == "W":
+                                                lomgtitude = -1 * longtitude
                                             # print('=' * 20)
                                             print(gnss.date_string(), tm[0], tm[1], int(tm[2]))
                                             print("latitude:", latitude)
