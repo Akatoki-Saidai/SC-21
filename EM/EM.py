@@ -435,24 +435,24 @@ def main():
 
                         if (30 < cansat_to_goal_angle_degree <=135):
                             print("right")
-                            motor.rightturn(motor_right, motor_left)
+                            motor.right_angle(bno, cansat_to_goal_angle_degree, motor_right, motor_left)
                             time.sleep(1)
 
                         if (135 <= cansat_to_goal_angle_degree <= 180):
                             print("sharp_right")
-                            motor.rightturn(motor_right, motor_left)
-                            motor.rightturn(motor_right, motor_left)
+                            motor.right_angle(bno, cansat_to_goal_angle_degree, motor_right, motor_left)                            
                             time.sleep(1)
 
                         if (225 < cansat_to_goal_angle_degree <= 330):
                             print("left")
-                            motor.leftturn(motor_right, motor_left)
+                            cansat_to_goal_angle_degree = (-1*cansat_to_goal_angle_degree) + 360
+                            motor.left_angle(bno, cansat_to_goal_angle_degree, motor_right, motor_left)                            
                             time.sleep(1) 
 
                         if (180 < cansat_to_goal_angle_degree < 225):
                             print("sharp_left")
-                            motor.leftturn(motor_right, motor_left)
-                            motor.leftturn(motor_right, motor_left)
+                            cansat_to_goal_angle_degree = (-1*cansat_to_goal_angle_degree) + 360
+                            motor.left_angle(bno, cansat_to_goal_angle_degree, motor_right, motor_left)
                             time.sleep(1)  
 
                     except Exception as e:
