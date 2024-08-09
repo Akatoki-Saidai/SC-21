@@ -27,9 +27,9 @@ def main():
 
     # LEDをセット
     try:
-        led_green = LED(10)
+        led_green = LED(27)
         led_green.off()
-        led_red = LED(27)
+        led_red = LED(10)
         led_red.off()
     except Exception as e:
         print(f"An error occured in setting LED: {e}")
@@ -234,7 +234,7 @@ def main():
             elif (phase == 1):
 
                 try:
-                    led_green.on()
+                    led_green.blink(2, 0.2)
                     led_red.off()
                     
                     # bmpの高度(altitude)取得
@@ -272,24 +272,27 @@ def main():
                         time.sleep(0.5)
                         Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
                         if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
-                            led_green.blink(0.5, 0.5, 20)
-                            led_red.on()
-                            
-                            # パラ分離用抵抗起動
-                            # NiCr_PIN.on()
-                            print("NiCr wire turn on")
-                            csv.print('msg', "NiCr wire turn on")
-                            time.sleep(10)
+                            time.sleep(3)
+                            if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
+                                led_green.blink(0.5, 0.5, 20)
+                                led_red.on()
+                                
+                                # パラ分離用抵抗起動
+                                # NiCr_PIN.on()
+                                print("NiCr wire turn on")
+                                csv.print('msg', "NiCr wire turn on")
+                                time.sleep(10)
 
-                            NiCr_PIN.off()
-                            print("NiCr wire turn off. Parachute separated")
-                            csv.print('msg', "NiCr wire turn off. Parachute separated")
+                                NiCr_PIN.off()
+                                print("NiCr wire turn off. Parachute separated")
+                                csv.print('msg', "NiCr wire turn off. Parachute separated")
 
-                            phase = 2
-                            print("Go to long phase")
-                            csv.print('msg', "Go to long phase")
-                            led_green.off()
-                        
+                                phase = 2
+                                print("Go to long phase")
+                                csv.print('msg', "Go to long phase")
+                                led_green.off()
+                            else:
+                                csv.print('msg', 'The stationary condition triple check did not pass. Try again.')
                         else:
                             csv.print('msg', 'The stationary condition double check did not pass. Try again.')
                     else:
@@ -309,6 +312,17 @@ def main():
                 try:
                     led_green.off()
                     led_red.on()
+
+                    # 機体がひっくり返ってたら回る
+                    try:
+                        accel_start_time = time.time()
+                        while 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2] and time.time()-accel_start_time < 5:
+                            motor.accel(motor_right, motor_left)
+                        else:
+                            motor.brake(motor_right, motor_left)
+                    except Exception as e:
+                        print(f"An error occured while changing the orientation: {e}")
+                        csv.print('error', f"An error occured while changing the orientation: {e}")
                     
                     # UART(GPS)受信データ，GPSの緯度経度取得
                     try:
@@ -583,8 +597,8 @@ def main():
 
             elif phase == 4:
                 try:
-                    led_green.blink(0.5, 0.5, 10)
-                    led_red.blink(0.5, 0.5, 10)
+                    led_green.blink(0.5, 0.5)
+                    led_red.blink(0.5, 0.5)
                     motor_left.value = 0.0
                     motor_right.value = 0.0
 
