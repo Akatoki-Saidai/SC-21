@@ -544,21 +544,21 @@ def main():
                             # 右にゴールがあるとき左に回転
                             elif (camera_order == 2):
                                 # モーターを回転させ，CanSatを1秒くらい左回転
-                                motor.rightturn(motor_right, motor_left)
+                                motor.right_angle(bno, 15, motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # 左にゴールがあるとき右に回転
                             elif (camera_order == 3):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                motor.leftturn(motor_right, motor_left)
+                                motor.left_angle(bno, 15, motor_right, motor_left)
                                 print("motor: leftturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # ゴールが見つからないとき右に回転
                             elif (camera_order == 0):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                motor.rightturn(motor_right, motor_left)
+                                motor.right_angle(bno, 30, motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
 
