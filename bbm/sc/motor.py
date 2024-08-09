@@ -8,7 +8,7 @@ import csv_print as csv
 
 from bno055 import BNO055
 
-delta_power = 0.20
+delta_power = 0.10
 
 def setup(AIN1, AIN2, BIN1, BIN2):
 
@@ -206,68 +206,76 @@ def leftonly(right, left):
     csv.print('motor_l', 0)
 
 
+# 指定した角度だけ右に曲がる
 def right_angle(bno, angle_deg, right, left):
+    csv.print('msg', f'motor: turn {angle_deg} deg to right')
+    csv.print('motor', [1, 0])
     angle_rad = angle_deg*np.pi/180
-    mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
     start_time = time.time()
-    prev_angle = np.arctan2(-mag[1], mag[0])
+    prev_time = time.time()
     rot_angle = 0
-    for i in range(1 // delta_power):
-        right.value, left.value = -i*delta_power, i*delta_power
-    right.value, left.value = -1, 1
 
-    while (time.time()-start_time) < 5:
+    # だんだん加速
+    for i in range(int(1 / delta_power)):
+        right.value, left.value = 0, i*delta_power
+        if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
+            break
+    right.value, left.value = 0, 1
+
+    while (prev_time-start_time) < 5:
         try:
-            mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
             gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-            now_angle = np.arctan2(-mag[1], mag[0])
-            angle_diff = now_angle - prev_angle
-            if angle_diff > 4:
-                angle_diff -= 2*np.pi
-            elif angle_diff < -4:
-                angle_diff += 2*np.pi
-            elif angle_diff < -0.2 or 0.2 < angle_diff:
-                angle_diff = 0
+            angle_diff = gyro[2]*(time.time() - prev_time)  # Δ角度 = 角速度 * Δ時間
+            prev_time = time.time()
             rot_angle += angle_diff
             
-            if rot_angle > angle_rad:
+            # 指定した角度以上になったら止まる
+            if rot_angle + 20 > angle_rad:
                 right.value, left.value = 0, 0
                 break
-
-            prev_angle = now_angle
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
             csv.print('error', f'An error occured in right_angle: {e}')
+    
+    # だんだん減速
+    for i in range(int(1 / delta_power)):
+        right.value, left.value = 0, 1 - i*delta_power
+    right.value , left.value = 0, 0
+    csv.print('motor', [0, 0])
 
+# 指定した角度だけ左に曲がる
 def left_angle(bno, angle_deg, right, left):
+    csv.print('msg', f'motor: turn {angle_deg} deg to left')
+    csv.print('motor', [0, 1])
     angle_rad = angle_deg*np.pi/180
-    mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
     start_time = time.time()
-    prev_angle = np.arctan2(-mag[1], mag[0])
+    prev_time = time.time()
     rot_angle = 0
-    for i in range(1 // delta_power):
-        right.value, left.value = i*delta_power, -i*delta_power
-    right.value, left.value = 1, -1
 
-    while (time.time()-start_time) < 5:
+    # だんだん加速
+    for i in range(int(1 / delta_power)):
+        right.value, left.value = i*delta_power, 0
+        if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
+            break
+    right.value, left.value = 1, 0
+
+    while (prev_time-start_time) < 5:
         try:
-            mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
             gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-            now_angle = np.arctan2(-mag[1], mag[0])
-            angle_diff = now_angle - prev_angle
-            if angle_diff > 4:
-                angle_diff -= 2*np.pi
-            elif angle_diff < -4:
-                angle_diff += 2*np.pi
-            elif angle_diff < -0.2 or 0.2 < angle_diff:
-                angle_diff = 0
+            angle_diff = gyro[2]*(time.time() - prev_time)  # Δ角度 = 角速度 * Δ時間
+            prev_time = time.time()
             rot_angle += angle_diff
             
-            if rot_angle < -angle_rad:
+            # 指定した角度以上になったら止まる
+            if rot_angle - 20 < -angle_rad:
                 right.value, left.value = 0, 0
                 break
-
-            prev_angle = now_angle
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
             csv.print('error', f'An error occured in left_angle: {e}')
+    
+    # だんだん減速
+    for i in range(int(1 / delta_power)):
+        right.value, left.value = 1 - i*delta_power, 0
+    right.value , left.value = 0, 0
+    csv.print('motor', [0, 0])
