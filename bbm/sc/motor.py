@@ -93,7 +93,7 @@ def leftturn(right, left):
     left.value = -1
     csv.print('motor', [-1, 1])
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -128,7 +128,7 @@ def rightturn(right, left):
     left.value = 1
     csv.print('motor', [1, -1])
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -163,7 +163,7 @@ def rightonly(right, left):
     right.value = 1
     csv.print('motor_r', 1)
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -194,7 +194,7 @@ def leftonly(right, left):
     left.value = 1
     csv.print('motor_l', 1)
 
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
