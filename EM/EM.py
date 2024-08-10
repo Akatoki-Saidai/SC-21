@@ -37,7 +37,7 @@ def main():
     
     # フェーズ，ゴール設定
     try:
-        phase = 2
+        phase = 1
         csv.print('phase', phase)
         goal_lat_lon = (35.86061183333333, 139.6062195)
         goal_latitude = goal_lat_lon[0]
@@ -626,7 +626,7 @@ def main():
                             elif (camera_order == 0):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
                                 motor.right_angle(bno, 30, motor_right, motor_left)
-                                motor.rightturn(motor_right, motor_left)
+                                # motor.rightturn(motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
 
