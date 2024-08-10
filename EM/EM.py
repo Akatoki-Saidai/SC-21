@@ -213,7 +213,7 @@ def main():
 
                     # bmpの高度の値とbaselineの値(地上の高度)を比較し，その結果で条件分岐
                     # 条件式を記述し，フェーズ移行
-                    if (altitude - first_altitude > 10):
+                    if (altitude - first_altitude > 30):
                         phase = 1
                         print("Go to falling phase")
                         csv.print('msg', 'Go to falling phase')
@@ -441,8 +441,8 @@ def main():
                             for i in range(5):
                                 Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
                                 Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                                gyro_xyz = sum(abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2]))
-                                accel_yz = sum(abs(Accel[1]) + abs(Accel[2]))
+                                gyro_xyz = abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2])
+                                accel_yz = abs(Accel[1]) + abs(Accel[2])
                                 is_stacking *= (gyro_xyz < 0.015)
                                 is_stacking *= (2*gyro_xyz + accel_yz < 4)
                                 time.sleep(0.2)

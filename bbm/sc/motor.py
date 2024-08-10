@@ -8,7 +8,7 @@ import csv_print as csv
 
 from bno055 import BNO055
 
-delta_power = 0.10
+delta_power = 0.20
 
 def setup(AIN1, AIN2, BIN1, BIN2):
 
@@ -93,7 +93,7 @@ def leftturn(right, left):
     left.value = -1
     csv.print('motor', [-1, 1])
 
-    time.sleep(0.25)
+    time.sleep(0.1)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -128,7 +128,7 @@ def rightturn(right, left):
     left.value = 1
     csv.print('motor', [1, -1])
 
-    time.sleep(0.25)
+    time.sleep(0.1)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -163,7 +163,7 @@ def rightonly(right, left):
     right.value = 1
     csv.print('motor_r', 1)
 
-    time.sleep(0.25)
+    time.sleep(0.1)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -194,7 +194,7 @@ def leftonly(right, left):
     left.value = 1
     csv.print('motor_l', 1)
 
-    time.sleep(0.25)
+    time.sleep(0.1)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -230,7 +230,7 @@ def right_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度以上になったら止まる
-            if rot_angle > angle_rad:
+            if rot_angle + 20 > angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
@@ -266,7 +266,7 @@ def left_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度以上になったら止まる
-            if rot_angle < -angle_rad:
+            if rot_angle - 20 < -angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
