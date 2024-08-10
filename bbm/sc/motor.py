@@ -1,6 +1,7 @@
 import time
 from gpiozero import Motor
 from gpiozero.pins.pigpio import PiGPIOFactory
+import random
 import numpy as np
 
 # 制御量の出力用
@@ -93,7 +94,7 @@ def leftturn(right, left):
     left.value = -1
     csv.print('motor', [-1, 1])
 
-    time.sleep(0.1)
+    time.sleep(0.5 + random.random()/2)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):
@@ -128,7 +129,7 @@ def rightturn(right, left):
     left.value = 1
     csv.print('motor', [1, -1])
 
-    time.sleep(0.1)
+    time.sleep(0.5 + random.random()/2)
 
     for i in range(int(1 / delta_power)):
         if (-1 <= power <= 1):

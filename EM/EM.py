@@ -329,9 +329,15 @@ def main():
                                 motor.accel(motor_right, motor_left)
                                 time.sleep(0.5)
                             else:
-                                print('muki_naotta')
-                                csv.print('msg', 'muki_naotta')
-                                motor.brake(motor_right, motor_left)
+                                if time.time()-accel_start_time >= 5:
+                                    # 5秒以内に元の向きに戻らなかった場合
+                                    motor.rightturn(motor_right, motor_left)
+                                    motor.leftturn(motor_right, motor_left)
+                                    continue
+                                else:
+                                    print('muki_naotta')
+                                    csv.print('msg', 'muki_naotta')
+                                    motor.brake(motor_right, motor_left)
                     except Exception as e:
                         print(f"An error occured while changing the orientation: {e}")
                         csv.print('error', f"An error occured while changing the orientation: {e}")
