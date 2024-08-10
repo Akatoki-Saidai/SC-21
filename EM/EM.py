@@ -253,19 +253,20 @@ def main():
 
                     # bnoの重力加速度を除いた加速度(Accel)を取得
                     try:
-                        Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
                         Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
-                        Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
                         Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                        # euler = bno.getVector(BNO055.VECTOR_EULER)
+                        euler = bno.getVector(BNO055.VECTOR_EULER)
                         grav = bno.getVector(BNO055.VECTOR_GRAVITY)
-                        # print("Gyro: ", Gyro)
-                        # print("Mag: ", Mag)
-                        # print("Accel: ", Accel)
-                        # print("Accel_all", Accel_all)
-                        # print("euler:",euler)
-                        # print("grav:",grav)
-
+                    except Exception as e:
+                        print(f"An error occured in reading bno055: {e}")
+                        csv.print('error', f"An error occured in reading bno055: {e}")
+                    
+                    # bnoの重力加速度を除いた加速度(Accel)を取得
+                    try:
+                        Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                        Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                        print("Gyro: ", Gyro)
+                        print("Accel: ", Accel)
                     except Exception as e:
                         print(f"An error occured in reading bno055: {e}")
                         csv.print('error', f"An error occured in reading bno055: {e}")
@@ -322,8 +323,13 @@ def main():
                     try:
                         accel_start_time = time.time()
                         while 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2] and time.time()-accel_start_time < 5:
+                            print('muki_hantai')
+                            csv.print('msg', 'muki_hantai')
                             motor.accel(motor_right, motor_left)
+                            time.sleep(0.5)
                         else:
+                            print('muki_naotta')
+                            csv.print('msg', 'muki_naotta')
                             motor.brake(motor_right, motor_left)
                     except Exception as e:
                         print(f"An error occured while changing the orientation: {e}")
@@ -442,7 +448,7 @@ def main():
                                 for i in range(5):
                                     Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
                                     gyro_xyz = abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2])
-                                    is_stacking *= (0.01 < gyro_xyz < 0.5)
+                                    is_stacking = is_stacking and (gyro_xyz < 0.75)
                                     time.sleep(0.2)
                                 if is_stacking:
                                     led_green.on()
@@ -456,7 +462,7 @@ def main():
                                     motor.leftturn(motor_right, motor_left)
                                     motor.accel(motor_right, motor_left)
                                     time.sleep(1)
-                                    motor.brake(motor_right, motor_left)                                    
+                                    motor.brake(motor_right, motor_left)
                                     led_green.off()
                                     led_red.on()
                             except Exception as e:
