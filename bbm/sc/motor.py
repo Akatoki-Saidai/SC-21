@@ -217,10 +217,10 @@ def right_angle(bno, angle_deg, right, left):
 
     # だんだん加速
     for i in range(int(1 / delta_power)):
-        right.value, left.value = 0, i*delta_power
+        right.value, left.value = -i*delta_power, i*delta_power
         if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
             break
-    right.value, left.value = 0, 1
+    right.value, left.value = -1, 1
 
     while (prev_time-start_time) < 5:
         try:
@@ -230,8 +230,7 @@ def right_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度以上になったら止まる
-            if rot_angle + 20 > angle_rad:
-                right.value, left.value = 0, 0
+            if rot_angle > angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
@@ -239,7 +238,7 @@ def right_angle(bno, angle_deg, right, left):
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
-        right.value, left.value = 0, 1 - i*delta_power
+        right.value, left.value = -1 + i*delta_power, 1 - i*delta_power
     right.value , left.value = 0, 0
     csv.print('motor', [0, 0])
 
@@ -254,10 +253,10 @@ def left_angle(bno, angle_deg, right, left):
 
     # だんだん加速
     for i in range(int(1 / delta_power)):
-        right.value, left.value = i*delta_power, 0
+        right.value, left.value = i*delta_power, -i*delta_power
         if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
             break
-    right.value, left.value = 1, 0
+    right.value, left.value = 1, -1
 
     while (prev_time-start_time) < 5:
         try:
@@ -267,8 +266,7 @@ def left_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度以上になったら止まる
-            if rot_angle - 20 < -angle_rad:
-                right.value, left.value = 0, 0
+            if rot_angle < -angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
@@ -276,6 +274,6 @@ def left_angle(bno, angle_deg, right, left):
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
-        right.value, left.value = 1 - i*delta_power, 0
+        right.value, left.value = 1 - i*delta_power, -1 + i*delta_power
     right.value , left.value = 0, 0
     csv.print('motor', [0, 0])
