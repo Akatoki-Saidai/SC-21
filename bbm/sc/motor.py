@@ -229,8 +229,8 @@ def right_angle(bno, angle_deg, right, left):
             prev_time = time.time()
             rot_angle += angle_diff
             
-            # 指定した角度以上になったら止まる
-            if rot_angle + 20 > angle_rad:
+            # 指定した角度になる直前に止まる
+            if rot_angle + 0.3 > angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
@@ -239,14 +239,18 @@ def right_angle(bno, angle_deg, right, left):
         # スタックしてます
         print('stacking now! in right_angle')
         csv.print('warning', 'stacking now! in right_angle')
+
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
+
         leftturn(right, left)
+
         accel(right, left)
         time.sleep(1)
         brake(right, left)
+
         rightturn(right, left)
-        accel(right, left)
-        time.sleep(1)
-        brake(right, left)
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
@@ -277,8 +281,8 @@ def left_angle(bno, angle_deg, right, left):
             prev_time = time.time()
             rot_angle += angle_diff
             
-            # 指定した角度以上になったら止まる
-            if rot_angle - 20 < -angle_rad:
+            # 指定した角度になる直前に止まる
+            if rot_angle - 0.3 < -angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
@@ -287,14 +291,18 @@ def left_angle(bno, angle_deg, right, left):
         # スタックしてます
         print('stacking now! in left_angle')
         csv.print('warning', 'stacking now! in left_angle')
+
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
+        
         rightturn(right, left)
+
         accel(right, left)
         time.sleep(1)
         brake(right, left)
+
         leftturn(right, left)
-        accel(right, left)
-        time.sleep(1)
-        brake(right, left)
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
