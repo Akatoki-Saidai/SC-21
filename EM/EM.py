@@ -254,17 +254,17 @@ def main():
                     # bnoの重力加速度を除いた加速度(Accel)を取得
                     try:
                         Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                        # Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
+                        Mag = bno.getVector(BNO055.VECTOR_MAGNETOMETER)
                         Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                        # Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
-                        euler = bno.getVector(BNO055.VECTOR_EULER)
+                        Accel_all = bno.getVector(BNO055.VECTOR_ACCELEROMETER)
+                        # euler = bno.getVector(BNO055.VECTOR_EULER)
                         grav = bno.getVector(BNO055.VECTOR_GRAVITY)
-                        print("Gyro: ", Gyro)
+                        # print("Gyro: ", Gyro)
                         # print("Mag: ", Mag)
-                        print("Accel: ", Accel)
+                        # print("Accel: ", Accel)
                         # print("Accel_all", Accel_all)
-                        print("euler:",euler)
-                        print("grav:",grav)
+                        # print("euler:",euler)
+                        # print("grav:",grav)
 
                     except Exception as e:
                         print(f"An error occured in reading bno055: {e}")
