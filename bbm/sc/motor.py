@@ -235,6 +235,18 @@ def right_angle(bno, angle_deg, right, left):
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
             csv.print('error', f'An error occured in right_angle: {e}')
+    else:
+        # スタックしてます
+        print('stacking now! in right_angle')
+        csv.print('warning', 'stacking now! in right_angle')
+        leftturn(right, left)
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
+        rightturn(right, left)
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
@@ -271,6 +283,18 @@ def left_angle(bno, angle_deg, right, left):
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
             csv.print('error', f'An error occured in left_angle: {e}')
+    else:
+        # スタックしてます
+        print('stacking now! in left_angle')
+        csv.print('warning', 'stacking now! in left_angle')
+        rightturn(right, left)
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
+        leftturn(right, left)
+        accel(right, left)
+        time.sleep(1)
+        brake(right, left)
     
     # だんだん減速
     for i in range(int(1 / delta_power)):
