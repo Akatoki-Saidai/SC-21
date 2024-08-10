@@ -570,35 +570,62 @@ def main():
                             if (camera_order == 1):
                                 # モーターを回転して前進
                                 motor.accel(motor_right, motor_left)
-                                print("motor: forward -1s")
+                                print("forward")
                                 time.sleep(1)  # 1秒進む
+
+                                # スタックチェック
+                                try:                                
+                                    is_stacking = 1
+                                    for i in range(5):
+                                        Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                                        gyro_xyz = abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2])
+                                        is_stacking = is_stacking and (gyro_xyz < 0.75)
+                                        time.sleep(0.1)
+                                    if is_stacking:
+                                        led_green.on()
+                                        led_red.blink(0.5, 0.5)
+                                        print('stacking now!')
+                                        csv.print('warning', 'stacking now!')
+                                        motor.rightturn(motor_right, motor_left)
+                                        motor.accel(motor_right, motor_left)
+                                        time.sleep(1)
+                                        motor.brake(motor_right, motor_left)
+                                        motor.leftturn(motor_right, motor_left)
+                                        motor.accel(motor_right, motor_left)
+                                        time.sleep(1)
+                                        motor.brake(motor_right, motor_left)
+                                        led_green.off()
+                                        led_red.on()
+                                except Exception as e:
+                                    print(f"An error occured in stack check: {e}")
+                                    csv.print('error', f"An error occured in stack check: {e}")
 
                                 # モーターの回転を停止
                                 motor.brake(motor_right, motor_left)
-                                print("motor: brake")
+                                print("brake")
                                 time.sleep(1)  # 1秒止まる
 
 
                             # 右にゴールがあるとき左に回転
                             elif (camera_order == 2):
                                 # モーターを回転させ，CanSatを1秒くらい左回転
-                                # motor.right_angle(bno, 15, motor_right, motor_left)
-                                motor.rightturn(motor_right, motor_left)
-                                print("motor: rightturn")
+                                motor.right_angle(bno, 30, motor_right, motor_left)
+                                # motor.rightturn(motor_right, motor_left)
+                                print("rightturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # 左にゴールがあるとき右に回転
                             elif (camera_order == 3):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                # motor.left_angle(bno, 15, motor_right, motor_left)
-                                motor.leftturn(motor_right, motor_left)
-                                print("motor: leftturn")
+                                motor.left_angle(bno, 30, motor_right, motor_left)
+                                # motor.leftturn(motor_right, motor_left)
+                                print("leftturn")
                                 time.sleep(1)  # 1秒止まる
 
                             # ゴールが見つからないとき右に回転
                             elif (camera_order == 0):
                                 # モーターを回転させ，CanSatを1秒くらい右回転
-                                # motor.right_angle(bno, 30, motor_right, motor_left)
+                                motor.right_angle(bno, 30, motor_right, motor_left)
                                 motor.rightturn(motor_right, motor_left)
                                 print("motor: rightturn")
                                 time.sleep(1)  # 1秒止まる
