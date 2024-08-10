@@ -430,7 +430,22 @@ def main():
                         if (cansat_to_goal_angle_degree < 30) or (330 < cansat_to_goal_angle_degree):
                             print("forward")
                             motor.accel(motor_right, motor_left)
-                            time.sleep(2)
+                            time.sleep(1)
+
+                            # スタックチェック
+                            is_stacking = 1
+                            for i in range(5):
+                                Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                                Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
+                                gyro_xyz = sum(abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2]))
+                                accel_yz = sum(abs(Accel[1]) + abs(Accel[2]))
+                                is_stacking *= (gyro_xyz < 0.015)
+                                is_stacking *= (2*gyro_xyz + accel_yz < 4)
+                                time.sleep(0.2)
+                            if is_stacking:
+                                print('stacking now!')
+                                csv.print('warning', 'stacking now!')
+
                             motor.brake(motor_right, motor_left)
 
                         if (30 < cansat_to_goal_angle_degree <=135):
