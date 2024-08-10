@@ -227,7 +227,7 @@ class BMP280:
         if manual_temperature is not None:
             temperature = manual_temperature
         # altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
-        altitude = ((1 - (pow((pressure / qnh), 0.190284))) * 145366.45) / 0.3048
+        altitude = (((1 - (pow((pressure / qnh), 0.190284))) * 145366.45) / 0.3048 ) / 10
         csv.print('alt', altitude)
         return altitude
     
