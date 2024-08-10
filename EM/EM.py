@@ -235,7 +235,7 @@ def main():
             elif (phase == 1):
 
                 try:
-                    led_green.blink(0.5, 0.5)
+                    led_green.blink(0.5, 0.5, 1000)
                     led_red.off()
                     
                     # bmpの高度(altitude)取得
@@ -453,7 +453,7 @@ def main():
                                     time.sleep(0.2)
                                 if is_stacking:
                                     led_green.on()
-                                    led_red.blink(0.5, 0.5)
+                                    led_red.blink(0.5, 0.5, 10)
                                     print('stacking now!')
                                     csv.print('warning', 'stacking now!')
                                     motor.rightturn(motor_right, motor_left)
@@ -584,7 +584,7 @@ def main():
                                         time.sleep(0.1)
                                     if is_stacking:
                                         led_green.on()
-                                        led_red.blink(0.5, 0.5)
+                                        led_red.blink(0.5, 0.5, 10)
                                         print('stacking now!')
                                         csv.print('warning', 'stacking now!')
                                         motor.rightturn(motor_right, motor_left)
@@ -674,8 +674,8 @@ def main():
 
             elif phase == 4:
                 try:
-                    led_green.blink(0.5, 0.5)
-                    led_red.blink(0.5, 0.5)
+                    led_green.blink(0.5, 0.5, 100)
+                    led_red.blink(0.5, 0.5, 100)
                     motor_left.value = 0.0
                     motor_right.value = 0.0
 
