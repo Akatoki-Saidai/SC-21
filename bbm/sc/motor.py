@@ -217,7 +217,11 @@ def right_angle(bno, angle_deg, right, left):
     # だんだん加速
     for i in range(int(1 / delta_power)):
         right.value, left.value = -i*delta_power, i*delta_power
-        if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
+        gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+        angle_diff = gyro[2]*(time.time() - prev_time)  # Δ角度 = 角速度 * Δ時間
+        prev_time = time.time()
+        rot_angle += angle_diff
+        if 3 < gyro[2]:
             break
     right.value, left.value = -1, 1
     csv.print('motor', [left.value, right.value])
@@ -270,7 +274,11 @@ def left_angle(bno, angle_deg, right, left):
     # だんだん加速
     for i in range(int(1 / delta_power)):
         right.value, left.value = i*delta_power, -i*delta_power
-        if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
+        gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+        angle_diff = gyro[2]*(time.time() - prev_time)  # Δ角度 = 角速度 * Δ時間
+        prev_time = time.time()
+        rot_angle += angle_diff
+        if 3 < gyro[2]:
             break
     right.value, left.value = 1, -1
 
