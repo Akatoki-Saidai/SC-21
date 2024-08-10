@@ -322,15 +322,16 @@ def main():
                     # 機体がひっくり返ってたら回る
                     try:
                         accel_start_time = time.time()
-                        while 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2] and time.time()-accel_start_time < 5:
-                            print('muki_hantai')
-                            csv.print('msg', 'muki_hantai')
-                            motor.accel(motor_right, motor_left)
-                            time.sleep(0.5)
-                        else:
-                            print('muki_naotta')
-                            csv.print('msg', 'muki_naotta')
-                            motor.brake(motor_right, motor_left)
+                        if 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2]:
+                            while 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2] and time.time()-accel_start_time < 5:
+                                print('muki_hantai')
+                                csv.print('msg', 'muki_hantai')
+                                motor.accel(motor_right, motor_left)
+                                time.sleep(0.5)
+                            else:
+                                print('muki_naotta')
+                                csv.print('msg', 'muki_naotta')
+                                motor.brake(motor_right, motor_left)
                     except Exception as e:
                         print(f"An error occured while changing the orientation: {e}")
                         csv.print('error', f"An error occured while changing the orientation: {e}")
