@@ -209,7 +209,6 @@ def leftonly(right, left):
 # 指定した角度だけ右に曲がる
 def right_angle(bno, angle_deg, right, left):
     csv.print('msg', f'motor: turn {angle_deg} deg to right')
-    csv.print('motor', [1, 0])
     angle_rad = angle_deg*np.pi/180
     start_time = time.time()
     prev_time = time.time()
@@ -221,6 +220,7 @@ def right_angle(bno, angle_deg, right, left):
         if 3 < bno.getVector(BNO055.VECTOR_GYROSCOPE)[2]:
             break
     right.value, left.value = -1, 1
+    csv.print('motor', [left.value, right.value])
 
     while (prev_time-start_time) < 5:
         try:
@@ -256,16 +256,16 @@ def right_angle(bno, angle_deg, right, left):
     for i in range(int(1 / delta_power)):
         right.value, left.value = -1 + i*delta_power, 1 - i*delta_power
     right.value , left.value = 0, 0
-    csv.print('motor', [0, 0])
+    csv.print('motor', [left.value, right.value])
 
 # 指定した角度だけ左に曲がる
 def left_angle(bno, angle_deg, right, left):
     csv.print('msg', f'motor: turn {angle_deg} deg to left')
-    csv.print('motor', [0, 1])
     angle_rad = angle_deg*np.pi/180
     start_time = time.time()
     prev_time = time.time()
     rot_angle = 0
+    csv.print('motor', [left.value, right.value])
 
     # だんだん加速
     for i in range(int(1 / delta_power)):
@@ -308,4 +308,4 @@ def left_angle(bno, angle_deg, right, left):
     for i in range(int(1 / delta_power)):
         right.value, left.value = 1 - i*delta_power, -1 + i*delta_power
     right.value , left.value = 0, 0
-    csv.print('motor', [0, 0])
+    csv.print('motor', [left.value, right.value])
