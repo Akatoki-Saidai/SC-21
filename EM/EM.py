@@ -235,7 +235,7 @@ def main():
             elif (phase == 1):
 
                 try:
-                    led_green.blink(2, 0.2)
+                    led_green.blink(0.5, 0.5)
                     led_red.off()
                     
                     # bmpの高度(altitude)取得
@@ -437,18 +437,31 @@ def main():
                             time.sleep(1)
 
                             # スタックチェック
-                            is_stacking = 1
-                            for i in range(5):
-                                Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
-                                Accel = bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                                gyro_xyz = abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2])
-                                accel_yz = abs(Accel[1]) + abs(Accel[2])
-                                is_stacking *= (gyro_xyz < 0.015)
-                                is_stacking *= (2*gyro_xyz + accel_yz < 4)
-                                time.sleep(0.2)
-                            if is_stacking:
-                                print('stacking now!')
-                                csv.print('warning', 'stacking now!')
+                            try:                                
+                                is_stacking = 1
+                                for i in range(5):
+                                    Gyro = bno.getVector(BNO055.VECTOR_GYROSCOPE)
+                                    gyro_xyz = abs(Gyro[0]) + abs(Gyro[1]) + abs(Gyro[2])
+                                    is_stacking *= (0.01 < gyro_xyz < 0.5)
+                                    time.sleep(0.2)
+                                if is_stacking:
+                                    led_green.on()
+                                    led_red.blink(0.5, 0.5)
+                                    print('stacking now!')
+                                    csv.print('warning', 'stacking now!')
+                                    motor.rightturn(motor_right, motor_left)
+                                    motor.accel(motor_right, motor_left)
+                                    time.sleep(1)
+                                    motor.brake(motor_right, motor_left)
+                                    motor.leftturn(motor_right, motor_left)
+                                    motor.accel(motor_right, motor_left)
+                                    time.sleep(1)
+                                    motor.brake(motor_right, motor_left)                                    
+                                    led_green.off()
+                                    led_red.on()
+                            except Exception as e:
+                                print(f"An error occured in stack check: {e}")
+                                csv.print('error', f"An error occured in stack check: {e}")
 
                             motor.brake(motor_right, motor_left)
 
