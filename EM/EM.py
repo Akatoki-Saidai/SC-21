@@ -52,7 +52,7 @@ def main():
     except Exception as e:
         print(f"An error occured in initialize phase and goal: {e}")
         csv.print('serious_error', f"An error occured in initialize phase and goal: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
     # 少々ここらで(print関数を)オーバーライド
     # ※printしたものがログファイルにも行きます
@@ -61,7 +61,7 @@ def main():
     except Exception as e:
         print(f"An error occured in overriding print: {e}")
         csv.print('serious_error', f"An error occured in overriding print: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
     # UART(GPS)通信設定(Check pin)
     try:
@@ -69,7 +69,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting serial 0: {e}")
         csv.print('serious_error', f"An error occured in setting serial 0: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
 
     try:
@@ -95,7 +95,7 @@ def main():
     except Exception as e:
         print(f"An error occured in turn on bmp, bno: {e}")
         csv.print('serious_error', f"An error occured in turn on bmp, bno: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
 
     # モータードライバセットアップ
@@ -110,7 +110,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting motor_driver: {e}")
         csv.print('serious_error', f"An error occured in setting motor_driver: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
 
     # gpsのセットアップ
@@ -119,7 +119,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting gps object: {e}")
         csv.print('serious_error', f"An error occured in setting gps object: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
 
     #bno055のセットアップ
@@ -133,7 +133,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting bno055 object: {e}")
         csv.print('serious_error', f"An error occured in setting bno055 object: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
         
 
     #bmp280のセットアップ
@@ -151,7 +151,7 @@ def main():
     except Exception as e:
         print(f"An error occured in setting bmp object: {e}")
         csv.print('serious_error', f"An error occured in setting bmp280 object: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
     # bmp280高度算出用基準気圧取得
     try:
@@ -164,7 +164,7 @@ def main():
     except Exception as e:
         print(f"An error occured in getting bmp data: {e}")
         csv.print('serious_error', f"An error occured in getting bmp280 data: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
     # カメラセットアップ
     try:
@@ -177,7 +177,7 @@ def main():
     except Exception as e:
         print(f"An error occurred in init camera: {e}")
         csv.print('serious_error', f"An error occurred in init camera: {e}")
-        led_red.blink(0.5, 0.5, 10)
+        led_red.blink(0.5, 0.5, 10, 0)
 
 
 
@@ -217,6 +217,7 @@ def main():
                         phase = 1
                         print("Go to falling phase")
                         csv.print('msg', 'Go to falling phase')
+                        led_green.blink(0.5, 0.5)
                     else:
                         pass
 
@@ -235,7 +236,7 @@ def main():
             elif (phase == 1):
 
                 try:
-                    led_green.blink(0.5, 0.5, 1000)
+                    # led_green.blink(0.5, 0.5, 1000)
                     led_red.off()
                     
                     # bmpの高度(altitude)取得
@@ -280,7 +281,7 @@ def main():
                         if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:  # 0.5s後にもう一度判定
                             time.sleep(3)
                             if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.2 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
-                                led_green.blink(0.5, 0.5, 20)
+                                # led_green.blink(0.5, 0.5, 20)
                                 led_red.on()
                                 
                                 # パラ分離用抵抗起動
@@ -555,6 +556,13 @@ def main():
                         picam2.start()
                         CameraStart = True
 
+                    # 機体が前に傾き過ぎていたら前進して修正
+                    grav = bno.getVector(BNO055.VECTOR_GRAVITY)
+                    if 6 < grav[0] or 0 < grav[2]:
+                        motor.accel(motor_right, motor_left)
+                        time.sleep(0.5)
+                        motor.brake(motor_right, motor_left)
+
                     ## カメラの取得したフレームから赤色を探す
                     if (CameraStart == True):
                         frame = picam2.capture_array()
@@ -663,6 +671,9 @@ def main():
                                 # ゴール判定
                                 print("Goal Goal Goal")
                                 csv.print('msg', 'Goal')
+
+                                led_green.blink(0.5, 0.5)
+                                led_red.blink(0.5, 0.5)
                             
                             else:
                                 pass
@@ -684,8 +695,8 @@ def main():
 
             elif phase == 4:
                 try:
-                    led_green.blink(0.5, 0.5, 100)
-                    led_red.blink(0.5, 0.5, 100)
+                    # led_green.blink(0.5, 0.5, 100)
+                    # led_red.blink(0.5, 0.5, 100)
                     motor_left.value = 0.0
                     motor_right.value = 0.0
 
