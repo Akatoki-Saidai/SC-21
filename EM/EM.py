@@ -292,6 +292,10 @@ def main():
                                 NiCr_PIN.off()
                                 print("NiCr wire turn off. Parachute separated")
                                 csv.print('msg', "NiCr wire turn off. Parachute separated")
+                                
+                                motor.accel(motor_right, motor_left)
+                                time.sleep(1)
+                                motor.brake(motor_right, motor_left)
 
                                 phase = 2
                                 print("Go to long phase")
@@ -650,7 +654,7 @@ def main():
                         try:
                             if (camera_order == 4):
                                 motor.accel(motor_right, motor_left)
-                                time.sleep(0.5)
+                                time.sleep(0.75)
                                 motor.brake(motor_right, motor_left)
                                 
                                 # cv2.destroyAllWindows()
