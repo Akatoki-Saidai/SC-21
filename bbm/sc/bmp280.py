@@ -212,7 +212,7 @@ class BMP280:
         self.update_sensor()
 
         # 異常値チェック
-        if not(-20<self.temperature<50 and 900<self.pressure<1100):
+        if not(800<self.pressure<1100):
             raise ValueError(f'The BMP measurement value is invalid. temp: {self.temperature}, press: {self.pressure}')
         
         csv.print('temp', self.temperature)
