@@ -237,6 +237,14 @@ def right_angle(bno, angle_deg, right, left):
             # 指定した角度になる直前に止まる
             if rot_angle + 0.45 > angle_rad:
                 break
+            
+            # ひっくり返っているか判定
+            if 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2]:
+                csv.print('warning', 'Starts orientation correction in right_angle')
+                accel(right, left)
+                time.sleep(0.5)
+                brake(right, left)
+                csv.print('msg', 'Finish correcting the orientation in right_angle')
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
             csv.print('error', f'An error occured in right_angle: {e}')
@@ -293,6 +301,14 @@ def left_angle(bno, angle_deg, right, left):
             # 指定した角度になる直前に止まる
             if rot_angle - 0.45 < -angle_rad:
                 break
+
+            # ひっくり返っているか判定
+            if 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2]:
+                csv.print('warning', 'Starts orientation correction in left_angle')
+                accel(right, left)
+                time.sleep(0.5)
+                brake(right, left)
+                csv.print('msg', 'Finish correcting the orientation in left_angle')
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
             csv.print('error', f'An error occured in left_angle: {e}')
