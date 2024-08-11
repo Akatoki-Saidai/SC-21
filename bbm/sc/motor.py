@@ -235,7 +235,7 @@ def right_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度になる直前に止まる
-            if rot_angle + 0.3 > angle_rad:
+            if rot_angle + 0.45 > angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in right_angle: {e}')
@@ -291,7 +291,7 @@ def left_angle(bno, angle_deg, right, left):
             rot_angle += angle_diff
             
             # 指定した角度になる直前に止まる
-            if rot_angle - 0.3 < -angle_rad:
+            if rot_angle - 0.45 < -angle_rad:
                 break
         except Exception as e:
             print(f'An error occured in left_angle: {e}')
