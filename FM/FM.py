@@ -37,7 +37,7 @@ def main():
     
     # フェーズ，ゴール設定
     try:
-        phase = 1
+        phase = 0
         csv.print('phase', phase)
         goal_lat_lon = (35.86061183333333, 139.6062195)
         goal_latitude = goal_lat_lon[0]
