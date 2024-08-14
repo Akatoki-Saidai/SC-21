@@ -300,7 +300,7 @@ class BNO055:
 		xyz_m = [median(x_data), median(y_data), median(z_data)]
 
 		# 全部ゼロは異常
-		if xyz_m[0] == xyz_m[1] == xyz_m[2] == 0:
+		if (xyz_m[0] == xyz_m[1] == xyz_m[2] == 0) and vectorType != BNO055.VECTOR_GYROSCOPE:
 			raise(ValueError(f'BNO measurement is abnormal: {xyz_m}'))
 
 		result_vector = [-1000,-1000,-1000]
