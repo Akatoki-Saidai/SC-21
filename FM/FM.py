@@ -39,7 +39,7 @@ def main():
     try:
         phase = 0
         csv.print('phase', phase)
-        goal_lat_lon = (40.14228458, 139.9873931)
+        goal_lat_lon = (40.14228, 139.98741)
         goal_latitude = goal_lat_lon[0]
         csv.print('goal_lat', goal_latitude)
         goal_longitude = goal_lat_lon[1]
