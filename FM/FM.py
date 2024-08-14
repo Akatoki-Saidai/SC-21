@@ -285,7 +285,7 @@ def main():
                                 led_red.on()
                                 
                                 # パラ分離用抵抗起動
-                                # NiCr_PIN.on()
+                                NiCr_PIN.on()
                                 print("NiCr wire turn on")
                                 csv.print('msg', "NiCr wire turn on")
                                 time.sleep(10)
