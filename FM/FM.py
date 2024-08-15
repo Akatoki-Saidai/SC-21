@@ -293,10 +293,17 @@ def main():
                                 NiCr_PIN.off()
                                 print("NiCr wire turn off. Parachute separated")
                                 csv.print('msg', "NiCr wire turn off. Parachute separated")
-                                
-                                motor.accel(motor_right, motor_left)
-                                time.sleep(1)
-                                motor.brake(motor_right, motor_left)
+
+                                if 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2]:
+                                    motor_right = -1
+                                    motor_left = -1
+                                    time.sleep(5)
+                                    motor_right = 0
+                                    motor_left = 0
+                                else:
+                                    motor.accel(motor_right, motor_left)
+                                    time.sleep(5)
+                                    motor.brake(motor_right, motor_left)
 
                                 phase = 2
                                 print("Go to long phase")
