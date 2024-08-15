@@ -275,12 +275,12 @@ def main():
                     # z方向の加速度Accel[2]が0，altitudeがbaselineから±3になったら移行 -> SC19を参考に変更
                     # 条件式を記述し，フェーズ移行
                     #ジャイロを条件式に入れてもいいかもね。不等式の値は適当だからあとで変えておいて。
-                    if altitude - first_altitude < 3 and sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.25 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.02:
+                    if altitude - first_altitude < 3 and sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.5 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.05:
                         time.sleep(0.5)
                         Gyro, Accel = bno.getVector(BNO055.VECTOR_GYROSCOPE), bno.getVector(BNO055.VECTOR_LINEARACCEL)
-                        if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.3 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.025:  # 0.5s後にもう一度判定
+                        if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.5 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.05:  # 0.5s後にもう一度判定
                             time.sleep(3)
-                            if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.3 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.025:
+                            if sum(abs(Accel_xyz) for Accel_xyz in Accel) < 0.5 and sum(abs(Gyro_xyz) for Gyro_xyz in Gyro) < 0.05:
                                 # led_green.blink(0.5, 0.5, 20)
                                 led_red.on()
                                 
@@ -295,11 +295,11 @@ def main():
                                 csv.print('msg', "NiCr wire turn off. Parachute separated")
 
                                 if 0 < bno.getVector(BNO055.VECTOR_GRAVITY)[2]:
-                                    motor_right = -1
-                                    motor_left = -1
+                                    motor_right.value = -1
+                                    motor_left.value = -1
                                     time.sleep(5)
-                                    motor_right = 0
-                                    motor_left = 0
+                                    motor_right.value = 0
+                                    motor_left.value = 0
                                 else:
                                     motor.accel(motor_right, motor_left)
                                     time.sleep(5)
