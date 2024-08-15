@@ -307,7 +307,7 @@ class BNO055:
 		if vectorType == BNO055.VECTOR_MAGNETOMETER:
 			scalingFactor = 16.0
 			result_vector = [i/scalingFactor for i in xyz_m]
-			if not(10 < sum(abs(n) for n in result_vector) < 200):
+			if not(10 < sum(abs(n) for n in result_vector) < 250):
 				raise(ValueError(f'BNO measurement is abnormal. mag: {result_vector}'))
 			# if not(-80 < result_vector[0] < 80 and -80 < result_vector[1] < 80 and -80 < result_vector[2] < 80):
 				# raise(ValueError(f'BNO measurement is abnormal. mag: {result_vector}'))
